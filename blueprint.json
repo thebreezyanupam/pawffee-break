@@ -2,7 +2,7 @@
 	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
 	"meta": {
 		"title": "Pawffee Break",
-		"description": "A cat & dog café site: Twenty Twenty-Five child theme with demo content.",
+		"description": "A cat & dog café site: Twenty Twenty-Five child theme, a custom ACF-powered adoptions plugin, and demo content.",
 		"author": "thebreezyanupam"
 	},
 	"landingPage": "/",
@@ -48,6 +48,29 @@
 			}
 		},
 		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "wordpress.org/plugins",
+				"slug": "advanced-custom-fields"
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "git:directory",
+				"url": "https://github.com/thebreezyanupam/pawffee-break",
+				"ref": "main",
+				"refType": "branch",
+				"path": "plugins/pawffee-adoptions"
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
 			"step": "installTheme",
 			"themeData": {
 				"resource": "git:directory",
@@ -69,7 +92,7 @@
 		},
 		{
 			"step": "runPHP",
-			"code": "<?php require '/wordpress/wp-load.php'; if ( function_exists( 'pawffee_seed_demo' ) ) { pawffee_seed_demo(); } flush_rewrite_rules(); ?>"
+			"code": "<?php require '/wordpress/wp-load.php'; if ( function_exists( 'pawffee_seed_demo' ) ) { pawffee_seed_demo(); } if ( function_exists( 'pawffee_adoptions_seed' ) ) { pawffee_adoptions_seed(); } flush_rewrite_rules(); ?>"
 		}
 	]
 }

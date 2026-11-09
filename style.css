@@ -2401,7 +2401,8 @@ body:not(.home) .wp-site-blocks > main {
 	font-family: var(--wp--preset--font-family--fira-code);
 	font-size: 0.7rem;
 	letter-spacing: 0.2em;
-	color: var(--pw-brown);
+	/* Roast, not brown: small text needs 4.5:1 (WCAG AA); brown is 3.3:1 here. */
+	color: var(--pw-roast);
 	margin: 0 0 1.5rem !important;
 }
 
@@ -2459,7 +2460,8 @@ body:not(.home) .wp-site-blocks > main {
 	font-weight: 500;
 	letter-spacing: 0.18em;
 	text-transform: uppercase;
-	color: var(--pw-brown);
+	/* Roast, not brown: this small label sits on oat, where brown is 2.95:1. */
+	color: var(--pw-roast);
 	margin-bottom: 0.35rem;
 }
 
@@ -2557,6 +2559,15 @@ body:not(.home) .wp-site-blocks > main {
 	background: var(--pw-oat);
 	border-radius: 18px;
 	padding: clamp(1.75rem, 4vw, 3.5rem) !important;
+}
+
+/* On the oat card, the usual brown and ash fall below WCAG AA contrast. */
+.pw-contact__form .is-style-text-annotation {
+	color: var(--pw-roast) !important; /* the base eyebrow colour is !important */
+}
+
+.pw-contact__form h2 em {
+	color: #956F49; /* brown, deepened to 3.6:1 on oat for large text */
 }
 
 .pw-contact__form h2 {
@@ -3391,7 +3402,8 @@ body:not(.home) .wp-site-blocks > main {
 }
 
 html:not(.pw-is-open) .pw-open-status__state {
-	color: var(--pw-clay);
+	/* Clay deepened so this 13px label reaches 4.5:1 on paper. */
+	color: #A24A36;
 }
 
 /* Shown whenever there is room beside the inline nav. */
@@ -3738,4 +3750,22 @@ html:not(.pw-is-open) .pw-open-status__state {
 	.admin-bar .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-close {
 		top: calc(46px + 1rem);
 	}
+}
+
+/* ==========================================================================
+   Accessibility utilities
+   ========================================================================== */
+
+/* Text for screen readers only, e.g. the full sentence behind word-split
+   animations, whose individual word spans are hidden from assistive tech. */
+.pw-sr-only {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }

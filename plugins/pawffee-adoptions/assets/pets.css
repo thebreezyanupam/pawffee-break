@@ -1,0 +1,56 @@
+/*
+ * Pawffee Adoptions: the few styles the theme doesn't already provide.
+ * Layout, type and colour come from the Pawffee Break theme's pw-pet styles;
+ * these use its custom properties with neutral fallbacks for other themes.
+ */
+
+/* Linked pet names read as headings, not as underlined links. */
+.pawffee-pet .pw-pet__name a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.pawffee-pet .pw-pet__name a:hover,
+.pawffee-pet .pw-pet__name a:focus-visible {
+	text-decoration: underline;
+	text-decoration-thickness: 0.06em;
+	text-underline-offset: 0.12em;
+}
+
+/* Pending pets: the status is in the text above the name; this only adds a cue. */
+.pawffee-pet--pending .pw-pet__img {
+	outline: 2px dashed var(--pw-brown, #8a5a3c);
+	outline-offset: 6px;
+}
+
+.pawffee-pet--adopted .pw-pet__img img {
+	filter: grayscale(0.35);
+}
+
+.pawffee-empty {
+	max-width: 40rem;
+	margin-inline: auto !important;
+	padding-block: 3rem;
+	text-align: center;
+	font-size: 1.1rem;
+}
+
+/* Single pet page */
+.pawffee-pet-profile .pw-pet {
+	border-bottom: 0;
+}
+
+.pawffee-story {
+	padding-block: 0 clamp(3rem, 8vw, 6rem);
+}
+
+.pawffee-story__title {
+	font-size: clamp(1.75rem, 3vw, 2.5rem);
+	margin-bottom: 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pawffee-pet .pw-pet__name a {
+		transition: none;
+	}
+}

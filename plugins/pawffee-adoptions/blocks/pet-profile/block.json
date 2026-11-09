@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pawffee/pet-profile",
+	"version": "1.0.0",
+	"title": "Pet profile",
+	"category": "widgets",
+	"icon": "pets",
+	"description": "The current pet's photo and profile facts. Used by the single pet template.",
+	"keywords": [ "adoption", "pet" ],
+	"textdomain": "pawffee-adoptions",
+	"usesContext": [ "postId", "postType" ],
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"reusable": false,
+		"inserter": false
+	},
+	"editorScript": "file:./editor.js",
+	"render": "file:./render.php"
+}

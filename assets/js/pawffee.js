@@ -476,9 +476,12 @@
 			} );
 		} );
 
-		el.setAttribute( 'aria-label', text );
+		// Screen readers get the sentence once, from a hidden copy; the
+		// animated word spans below are aria-hidden. (aria-label isn't
+		// allowed on a plain paragraph, so it can't carry the text.)
 		el.classList.add( 'pw-split' );
 		el.textContent = '';
+		el.appendChild( srOnly( text ) );
 
 		words.forEach( function ( word, i ) {
 			var mask = document.createElement( 'span' );
@@ -607,6 +610,19 @@
 	}
 
 	/**
+	 * A visually hidden copy of some text, for screen readers.
+	 *
+	 * @param {string} text
+	 * @return {HTMLSpanElement}
+	 */
+	function srOnly( text ) {
+		var span = document.createElement( 'span' );
+		span.className = 'pw-sr-only';
+		span.textContent = text;
+		return span;
+	}
+
+	/**
 	 * The manifesto paragraph lights up word by word as it passes through
 	 * the middle of the viewport.
 	 */
@@ -615,8 +631,8 @@
 			var text = el.textContent.trim();
 			var words = text.split( /\s+/ );
 
-			el.setAttribute( 'aria-label', text );
 			el.textContent = '';
+			el.appendChild( srOnly( text ) );
 
 			var spans = words.map( function ( word, i ) {
 				var span = document.createElement( 'span' );

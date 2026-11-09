@@ -1,0 +1,254 @@
+{
+    "key": "group_pawffee_pet",
+    "title": "Pet profile",
+    "fields": [
+        {
+            "key": "field_pawffee_tab_profile",
+            "label": "Profile",
+            "name": "",
+            "type": "tab",
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_pawffee_species",
+            "label": "Species",
+            "name": "species",
+            "type": "button_group",
+            "required": 1,
+            "choices": {
+                "dog": "Dog",
+                "cat": "Cat"
+            },
+            "default_value": "dog",
+            "return_format": "value",
+            "layout": "horizontal",
+            "wrapper": { "width": "33" }
+        },
+        {
+            "key": "field_pawffee_sex",
+            "label": "Sex",
+            "name": "sex",
+            "type": "button_group",
+            "choices": {
+                "female": "Female",
+                "male": "Male",
+                "pair": "Bonded pair"
+            },
+            "allow_null": 1,
+            "return_format": "value",
+            "layout": "horizontal",
+            "wrapper": { "width": "67" }
+        },
+        {
+            "key": "field_pawffee_tagline",
+            "label": "Tagline",
+            "name": "tagline",
+            "type": "text",
+            "instructions": "A short line shown above the name, such as \"Café favourite\" or \"Lap specialist\".",
+            "maxlength": 40,
+            "placeholder": "Café favourite"
+        },
+        {
+            "key": "field_pawffee_breed",
+            "label": "Breed",
+            "name": "breed",
+            "type": "text",
+            "required": 1,
+            "maxlength": 60,
+            "placeholder": "Labrador Mix",
+            "wrapper": { "width": "50" }
+        },
+        {
+            "key": "field_pawffee_age",
+            "label": "Age",
+            "name": "age",
+            "type": "group",
+            "layout": "row",
+            "wrapper": { "width": "50" },
+            "sub_fields": [
+                {
+                    "key": "field_pawffee_age_value",
+                    "label": "Number",
+                    "name": "value",
+                    "type": "number",
+                    "required": 1,
+                    "min": 0,
+                    "max": 30,
+                    "step": 1
+                },
+                {
+                    "key": "field_pawffee_age_unit",
+                    "label": "Unit",
+                    "name": "unit",
+                    "type": "select",
+                    "choices": {
+                        "months": "Months",
+                        "years": "Years"
+                    },
+                    "default_value": "years",
+                    "return_format": "value",
+                    "ui": 0
+                }
+            ]
+        },
+        {
+            "key": "field_pawffee_photo",
+            "label": "Photo",
+            "name": "photo",
+            "type": "image",
+            "instructions": "A portrait photo works best; it's cropped to an arch shape. In the Media Library, describe the pet in the Alternative Text box so people using screen readers know who they are meeting.",
+            "required": 1,
+            "return_format": "id",
+            "preview_size": "medium",
+            "library": "all",
+            "min_width": 600,
+            "mime_types": "jpg,jpeg,png,webp"
+        },
+        {
+            "key": "field_pawffee_summary",
+            "label": "Summary",
+            "name": "summary",
+            "type": "textarea",
+            "instructions": "Two or three sentences for the Adoption page. The full story goes in the editor above.",
+            "required": 1,
+            "rows": 4,
+            "maxlength": 320,
+            "new_lines": ""
+        },
+        {
+            "key": "field_pawffee_good_to_know",
+            "label": "Good to know",
+            "name": "good_to_know",
+            "type": "textarea",
+            "instructions": "The kind of home they'd do best in. Shown in a highlighted note.",
+            "rows": 3,
+            "maxlength": 220,
+            "new_lines": ""
+        },
+        {
+            "key": "field_pawffee_tab_adoption",
+            "label": "Adoption & care",
+            "name": "",
+            "type": "tab",
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_pawffee_status",
+            "label": "Adoption status",
+            "name": "status",
+            "type": "select",
+            "instructions": "Pending pets stay on the Adoption page with a note. Adopted pets come off the page but keep their profile.",
+            "required": 1,
+            "choices": {
+                "available": "Available",
+                "pending": "Adoption pending",
+                "adopted": "Adopted"
+            },
+            "default_value": "available",
+            "return_format": "value",
+            "ui": 0,
+            "wrapper": { "width": "50" }
+        },
+        {
+            "key": "field_pawffee_adopted_on",
+            "label": "Adopted on",
+            "name": "adopted_on",
+            "type": "date_picker",
+            "required": 1,
+            "display_format": "F j, Y",
+            "return_format": "Y-m-d",
+            "first_day": 0,
+            "wrapper": { "width": "50" },
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_pawffee_status",
+                        "operator": "==",
+                        "value": "adopted"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_pawffee_good_with",
+            "label": "Good with",
+            "name": "good_with",
+            "type": "checkbox",
+            "choices": {
+                "kids": "Kids",
+                "dogs": "Dogs",
+                "cats": "Cats"
+            },
+            "layout": "horizontal",
+            "return_format": "value"
+        },
+        {
+            "key": "field_pawffee_health",
+            "label": "Health",
+            "name": "health",
+            "type": "group",
+            "layout": "row",
+            "sub_fields": [
+                {
+                    "key": "field_pawffee_health_vaccinated",
+                    "label": "Vaccinated",
+                    "name": "vaccinated",
+                    "type": "true_false",
+                    "ui": 1,
+                    "ui_on_text": "Yes",
+                    "ui_off_text": "Not yet"
+                },
+                {
+                    "key": "field_pawffee_health_fixed",
+                    "label": "Spayed or neutered",
+                    "name": "fixed",
+                    "type": "true_false",
+                    "ui": 1,
+                    "ui_on_text": "Yes",
+                    "ui_off_text": "Not yet"
+                },
+                {
+                    "key": "field_pawffee_health_microchipped",
+                    "label": "Microchipped",
+                    "name": "microchipped",
+                    "type": "true_false",
+                    "ui": 1,
+                    "ui_on_text": "Yes",
+                    "ui_off_text": "Not yet"
+                }
+            ]
+        },
+        {
+            "key": "field_pawffee_fee",
+            "label": "Adoption fee",
+            "name": "adoption_fee",
+            "type": "number",
+            "instructions": "Leave empty to hide the fee.",
+            "min": 0,
+            "step": 5,
+            "prepend": "$",
+            "append": "CAD"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "pawffee_pet"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Facts shown on the Adoption page and each pet's profile.",
+    "show_in_rest": 1,
+    "modified": 1794200000
+}

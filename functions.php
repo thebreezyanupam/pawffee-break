@@ -529,3 +529,53 @@ function pawffee_preload_hero() {
 	}
 }
 add_action( 'wp_head', 'pawffee_preload_hero', 2 );
+
+/**
+ * A meta description for every page, unless an SEO plugin already writes one.
+ *
+ * Uses the excerpt when there is one, otherwise the page's intro paragraph
+ * (pw-page-intro), otherwise its first substantial paragraph. Plugins can
+ * supply their own text through the pawffee_meta_description filter, as
+ * Pawffee Adoptions does for each pet.
+ */
+function pawffee_meta_description() {
+	if ( defined( 'WPSEO_VERSION' ) || class_exists( 'RankMath' ) || defined( 'AIOSEO_VERSION' ) || defined( 'SEOPRESS_VERSION' ) ) {
+		return;
+	}
+
+	$text = '';
+
+	if ( is_singular() ) {
+		$post = get_queried_object();
+
+		if ( has_excerpt( $post ) ) {
+			$text = get_the_excerpt( $post );
+		} elseif ( preg_match_all( '#<p([^>]*)>(.*?)</p>#s', $post->post_content, $paragraphs, PREG_SET_ORDER ) ) {
+			foreach ( $paragraphs as $p ) {
+				if ( str_contains( $p[1], 'pw-page-intro' ) ) {
+					$text = $p[2];
+					break;
+				}
+			}
+			if ( '' === $text ) {
+				foreach ( $paragraphs as $p ) {
+					if ( strlen( wp_strip_all_tags( $p[2] ) ) >= 60 ) {
+						$text = $p[2];
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	$text = (string) apply_filters( 'pawffee_meta_description', $text );
+	$text = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( html_entity_decode( $text, ENT_QUOTES, 'UTF-8' ) ) ) );
+
+	if ( '' === $text ) {
+		/* translators: %s: site tagline. */
+		$text = sprintf( __( 'Pawffee Break, a cat and dog café in Hamilton, Ontario. %s', 'pawffee-break' ), get_bloginfo( 'description' ) );
+	}
+
+	printf( "<meta name=\"description\" content=\"%s\">\n", esc_attr( wp_html_excerpt( $text, 158, '…' ) ) );
+}
+add_action( 'wp_head', 'pawffee_meta_description', 1 );
