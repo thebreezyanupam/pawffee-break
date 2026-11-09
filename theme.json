@@ -1,0 +1,251 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.7/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": true,
+		"color": {
+			"defaultDuotone": false,
+			"defaultGradients": false,
+			"defaultPalette": false,
+			"palette": [
+				{
+					"color": "#F7F1E8",
+					"name": "Paper",
+					"slug": "base"
+				},
+				{
+					"color": "#1E1512",
+					"name": "Espresso",
+					"slug": "contrast"
+				},
+				{
+					"color": "#E0A458",
+					"name": "Crema",
+					"slug": "accent-1"
+				},
+				{
+					"color": "#EFE3D3",
+					"name": "Oat",
+					"slug": "accent-2"
+				},
+				{
+					"color": "#6B4A32",
+					"name": "Dark Roast",
+					"slug": "accent-3"
+				},
+				{
+					"color": "#7A6A5F",
+					"name": "Ash",
+					"slug": "accent-4"
+				},
+				{
+					"color": "#FBF7F1",
+					"name": "Steamed Milk",
+					"slug": "accent-5"
+				},
+				{
+					"color": "color-mix(in srgb, currentColor 18%, transparent)",
+					"name": "Hairline",
+					"slug": "accent-6"
+				},
+				{
+					"color": "#A67C52",
+					"name": "Latte Brown",
+					"slug": "pawffee-brown"
+				},
+				{
+					"color": "#B5533C",
+					"name": "Clay",
+					"slug": "pawffee-clay"
+				}
+			]
+		},
+		"custom": {
+			"pawffee": {
+				"gutter": "clamp(1.25rem, 4vw, 3.5rem)",
+				"ease": "cubic-bezier(0.22, 1, 0.36, 1)",
+				"duration": "0.9s"
+			}
+		},
+		"layout": {
+			"contentSize": "720px",
+			"wideSize": "1440px"
+		},
+		"spacing": {
+			"defaultSpacingSizes": false,
+			"spacingSizes": [
+				{ "name": "Tiny", "size": "10px", "slug": "20" },
+				{ "name": "X-Small", "size": "20px", "slug": "30" },
+				{ "name": "Small", "size": "32px", "slug": "40" },
+				{ "name": "Regular", "size": "clamp(36px, 5vw, 60px)", "slug": "50" },
+				{ "name": "Large", "size": "clamp(48px, 7vw, 96px)", "slug": "60" },
+				{ "name": "X-Large", "size": "clamp(44px, 9vw, 140px)", "slug": "70" },
+				{ "name": "XX-Large", "size": "clamp(52px, 13vw, 200px)", "slug": "80" }
+			],
+			"units": [ "%", "px", "em", "rem", "vh", "vw" ]
+		},
+		"typography": {
+			"writingMode": true,
+			"defaultFontSizes": false,
+			"fluid": true,
+			"fontSizes": [
+				{
+					"fluid": false,
+					"name": "Label",
+					"size": "0.75rem",
+					"slug": "x-small"
+				},
+				{
+					"fluid": false,
+					"name": "Small",
+					"size": "0.875rem",
+					"slug": "small"
+				},
+				{
+					"fluid": { "min": "1rem", "max": "1.125rem" },
+					"name": "Medium",
+					"size": "1.0625rem",
+					"slug": "medium"
+				},
+				{
+					"fluid": { "min": "1.1875rem", "max": "1.5rem" },
+					"name": "Large",
+					"size": "1.3125rem",
+					"slug": "large"
+				},
+				{
+					"fluid": { "min": "1.75rem", "max": "2.5rem" },
+					"name": "Extra Large",
+					"size": "2rem",
+					"slug": "x-large"
+				},
+				{
+					"fluid": { "min": "2.75rem", "max": "5.5rem" },
+					"name": "Extra Extra Large",
+					"size": "3.5rem",
+					"slug": "xx-large"
+				},
+				{
+					"fluid": { "min": "3.75rem", "max": "10rem" },
+					"name": "Display",
+					"size": "6rem",
+					"slug": "display"
+				}
+			],
+			"fontFamilies": [
+				{
+					"name": "Fraunces",
+					"slug": "fraunces",
+					"fontFamily": "Fraunces, \"Times New Roman\", serif"
+				},
+				{
+					"name": "Manrope",
+					"slug": "manrope",
+					"fontFamily": "Manrope, ui-sans-serif, system-ui, sans-serif"
+				},
+				{
+					"name": "Fira Code",
+					"slug": "fira-code",
+					"fontFamily": "\"Fira Code\", ui-monospace, monospace"
+				}
+			]
+		},
+		"useRootPaddingAwareAlignments": true
+	},
+	"styles": {
+		"color": {
+			"background": "var:preset|color|base",
+			"text": "var:preset|color|contrast"
+		},
+		"spacing": {
+			"blockGap": "1.5rem",
+			"padding": {
+				"left": "var:preset|spacing|50",
+				"right": "var:preset|spacing|50"
+			}
+		},
+		"typography": {
+			"fontFamily": "var:preset|font-family|manrope",
+			"fontSize": "var:preset|font-size|medium",
+			"fontWeight": "400",
+			"letterSpacing": "-0.011em",
+			"lineHeight": "1.65"
+		},
+		"elements": {
+			"heading": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|fraunces",
+					"fontWeight": "400",
+					"letterSpacing": "-0.03em",
+					"lineHeight": "1.04"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|contrast"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|pawffee-brown"
+					}
+				}
+			},
+			"button": {
+				"color": {
+					"background": "var:preset|color|contrast",
+					"text": "var:preset|color|base"
+				},
+				"border": {
+					"radius": "999px"
+				},
+				"spacing": {
+					"padding": {
+						"top": "1.05em",
+						"bottom": "1.05em",
+						"left": "2.1em",
+						"right": "2.1em"
+					}
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|fira-code",
+					"fontSize": "0.75rem",
+					"fontWeight": "500",
+					"letterSpacing": "0.14em",
+					"textTransform": "uppercase"
+				},
+				":hover": {
+					"color": {
+						"background": "var:preset|color|pawffee-brown",
+						"text": "var:preset|color|base"
+					}
+				}
+			}
+		},
+		"blocks": {
+			"core/avatar": {
+				"border": { "radius": "100px" }
+			},
+			"core/site-title": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|fraunces",
+					"fontWeight": "500",
+					"letterSpacing": "-0.04em"
+				}
+			},
+			"core/quote": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|fraunces",
+					"fontWeight": "300"
+				}
+			},
+			"core/navigation": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|fira-code",
+					"fontSize": "var:preset|font-size|x-small",
+					"letterSpacing": "0.1em",
+					"textTransform": "uppercase"
+				}
+			}
+		}
+	}
+}

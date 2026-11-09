@@ -1,0 +1,46 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","align":"full","className":"pw-blog","layout":{"type":"constrained"}} -->
+<main class="wp-block-group alignfull pw-blog"><!-- wp:group {"align":"wide","className":"pw-page-hero","layout":{"type":"default"}} -->
+<div class="wp-block-group alignwide pw-page-hero"><!-- wp:paragraph {"className":"is-style-text-annotation"} -->
+<p class="is-style-text-annotation">Brewed Stories</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":1,"className":"pw-page-title"} -->
+<h1 class="wp-block-heading pw-page-title">Notes from <em>the café.</em></h1>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"className":"pw-page-intro"} -->
+<p class="pw-page-intro">News, adoption updates and small joys from behind the counter — freshly brewed, every so often.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:query {"queryId":51,"query":{"perPage":9,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":true},"align":"wide","className":"pw-stories pw-stories--index"} -->
+<div class="wp-block-query alignwide pw-stories pw-stories--index"><!-- wp:post-template {"layout":{"type":"grid","columnCount":3}} -->
+<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"4/5","sizeSlug":"medium_large"} /-->
+
+<!-- wp:post-date /-->
+
+<!-- wp:post-title {"level":2,"isLink":true} /-->
+
+<!-- wp:post-excerpt {"excerptLength":22} /-->
+<!-- /wp:post-template -->
+
+<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"space-between"}} -->
+<!-- wp:query-pagination-previous /-->
+
+<!-- wp:query-pagination-numbers /-->
+
+<!-- wp:query-pagination-next /-->
+<!-- /wp:query-pagination -->
+
+<!-- wp:query-no-results -->
+<!-- wp:paragraph -->
+<p>No stories yet — check back soon.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:query-no-results --></div>
+<!-- /wp:query --></main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+

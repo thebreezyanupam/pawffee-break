@@ -1,0 +1,3711 @@
+/*
+Theme Name:     Pawffee Child
+Theme URI:      https://github.com/thebreezyanupam/pawffee-break
+Description:    Child theme for the Twenty Twenty-Five block theme for Pawffee Break Café. Warm editorial design system — paper, espresso ink and crema — with a scroll-driven motion layer built in vanilla JS.
+Author:         Anupam Pandey
+Author URI:     https://github.com/thebreezyanupam
+Template:       twentytwentyfive
+Version:        3.1.0
+*/
+
+/* ==========================================================================
+   01. Tokens
+   ========================================================================== */
+
+:root {
+	--pw-paper: var(--wp--preset--color--base, #F7F1E8);
+	--pw-ink: var(--wp--preset--color--contrast, #1E1512);
+	--pw-brown: var(--wp--preset--color--pawffee-brown, #A67C52);
+	--pw-crema: var(--wp--preset--color--accent-1, #E0A458);
+	--pw-oat: var(--wp--preset--color--accent-2, #EFE3D3);
+	--pw-roast: var(--wp--preset--color--accent-3, #6B4A32);
+	--pw-ash: var(--wp--preset--color--accent-4, #7A6A5F);
+	--pw-clay: var(--wp--preset--color--pawffee-clay, #B5533C);
+
+	--pw-hairline: color-mix(in srgb, var(--pw-ink) 14%, transparent);
+	--pw-hairline-soft: color-mix(in srgb, var(--pw-ink) 8%, transparent);
+
+	--pw-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--pw-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+	--pw-dur: 0.9s;
+}
+
+* {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	background: var(--pw-paper);
+	color: var(--pw-ink);
+	overflow-x: clip;
+}
+
+/* Fraunces is a variable font with an optical-size axis. Display-scale text
+   wants a high opsz for tighter, more editorial letterforms. */
+h1, h2, h3,
+.wp-block-site-title,
+.wp-block-quote {
+	font-variation-settings: "SOFT" 0, "WONK" 0, "opsz" 100;
+	text-wrap: balance;
+}
+
+h4, h5, h6 {
+	font-variation-settings: "SOFT" 0, "WONK" 0, "opsz" 24;
+	text-wrap: balance;
+}
+
+p {
+	text-wrap: pretty;
+}
+
+::selection {
+	background: var(--pw-crema);
+	color: var(--pw-ink);
+}
+
+/* ==========================================================================
+   02. Film grain
+   ========================================================================== */
+
+.pawffee-grain {
+	position: fixed;
+	inset: -50%;
+	z-index: 9998;
+	pointer-events: none;
+	opacity: 0.3;
+	mix-blend-mode: multiply;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+	will-change: transform;
+	animation: pw-grain 8s steps(10) infinite;
+}
+
+@keyframes pw-grain {
+	0%   { transform: translate(0, 0); }
+	10%  { transform: translate(-3%, -4%); }
+	20%  { transform: translate(-8%, 2%); }
+	30%  { transform: translate(4%, -6%); }
+	40%  { transform: translate(-2%, 6%); }
+	50%  { transform: translate(-6%, 3%); }
+	60%  { transform: translate(5%, 0); }
+	70%  { transform: translate(0, 4%); }
+	80%  { transform: translate(3%, -3%); }
+	90%  { transform: translate(-4%, 2%); }
+	100% { transform: translate(0, 0); }
+}
+
+/* ==========================================================================
+   03. Custom cursor
+   ========================================================================== */
+
+.pawffee-cursor {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9999;
+	pointer-events: none;
+	width: 34px;
+	height: 34px;
+	margin: -17px 0 0 -17px;
+	border: 1px solid var(--pw-brown);
+	border-radius: 50%;
+	opacity: 0;
+	transition: width 0.4s var(--pw-ease), height 0.4s var(--pw-ease),
+		margin 0.4s var(--pw-ease), opacity 0.3s linear,
+		background-color 0.4s var(--pw-ease), border-color 0.4s var(--pw-ease);
+}
+
+.pawffee-cursor.is-visible {
+	opacity: 1;
+}
+
+.pawffee-cursor__dot {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 4px;
+	height: 4px;
+	margin: -2px 0 0 -2px;
+	border-radius: 50%;
+	background: var(--pw-brown);
+	transition: opacity 0.3s var(--pw-ease);
+}
+
+.pawffee-cursor.is-active {
+	width: 74px;
+	height: 74px;
+	margin: -37px 0 0 -37px;
+	background: color-mix(in srgb, var(--pw-brown) 14%, transparent);
+	border-color: transparent;
+}
+
+.pawffee-cursor.is-active .pawffee-cursor__dot {
+	opacity: 0;
+}
+
+/* Pointer-based devices only. Touch screens keep the native affordances. */
+@media (hover: none), (pointer: coarse) {
+	.pawffee-cursor {
+		display: none;
+	}
+}
+
+/* ==========================================================================
+   04. Header
+   ========================================================================== */
+
+/* Deliberately no backdrop-filter. A filtered ancestor becomes the containing
+   block for fixed-position descendants, which trapped the navigation overlay
+   inside the 68px header instead of letting it cover the viewport. A solid
+   paper background reads the same against this palette and costs nothing. */
+.wp-site-blocks > header {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	background: var(--pw-paper);
+	border-bottom: 1px solid transparent;
+	transition: border-color 0.5s var(--pw-ease), box-shadow 0.5s var(--pw-ease);
+}
+
+.pw-scrolled .wp-site-blocks > header {
+	border-bottom-color: var(--pw-hairline);
+	box-shadow: 0 12px 32px -24px rgba(30, 21, 18, 0.35);
+}
+
+/* The header markup nests a 1px-bordered group; the sticky bar owns the rule now. */
+.wp-site-blocks > header .wp-block-group[style*="border-width:1px"],
+.wp-site-blocks > header .wp-block-group[style*="border-width: 1px"] {
+	border-width: 0 !important;
+}
+
+.wp-site-blocks > header .wp-block-group.alignwide {
+	padding-top: 1.35rem !important;
+	padding-bottom: 1.35rem !important;
+	transition: padding 0.5s var(--pw-ease);
+}
+
+.pw-scrolled .wp-site-blocks > header .wp-block-group.alignwide {
+	padding-top: 0.85rem !important;
+	padding-bottom: 0.85rem !important;
+}
+
+/* The header is a flex row, so the title shrinks to its flex base and the two
+   words break. Pin it to its content width and hold the line. */
+.wp-site-blocks > header .wp-block-site-title {
+	flex: 0 0 auto;
+	width: max-content;
+	max-width: none;
+	white-space: nowrap;
+	line-height: 1;
+	margin: 0;
+}
+
+.wp-block-site-title a {
+	display: inline-block;
+	text-decoration: none !important;
+	font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+	line-height: 1;
+	/* The lockup is two words; letting it wrap doubles the header height. */
+	white-space: nowrap;
+}
+
+/* The tagline beside the logo reads as a set-in label, not body copy. */
+.wp-site-blocks > header .header-tagline,
+.wp-site-blocks > header p.has-small-font-size {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem !important;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+	margin: 0;
+}
+
+/* ==========================================================================
+   05. Navigation
+   ========================================================================== */
+
+.wp-block-navigation .wp-block-navigation-item__content {
+	position: relative;
+	text-decoration: none !important;
+	padding-bottom: 3px;
+}
+
+.wp-block-navigation .wp-block-navigation-item__content::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 1px;
+	background: currentColor;
+	transform: scaleX(0);
+	transform-origin: right center;
+	transition: transform 0.55s var(--pw-ease);
+}
+
+.wp-block-navigation .wp-block-navigation-item__content:hover::after,
+.wp-block-navigation .current-menu-item .wp-block-navigation-item__content::after {
+	transform: scaleX(1);
+	transform-origin: left center;
+}
+
+.wp-block-navigation .current-menu-item .wp-block-navigation-item__content {
+	color: var(--pw-brown);
+}
+
+/* Core collapses the navigation into its overlay at a hard-coded 600px. Seven
+   uppercase items plus the logo need roughly 1100px, so the inline menu
+   overflows through the whole tablet range. The overlay markup and toggle are
+   already in the DOM — only the breakpoint moves. */
+@media (max-width: 1100px) {
+	.wp-site-blocks > header .wp-block-navigation__responsive-container-open:not(.always-shown) {
+		display: flex;
+		font-family: var(--wp--preset--font-family--fira-code);
+		font-size: 0.7rem;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+	}
+
+	.wp-site-blocks > header .wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
+		display: none;
+	}
+}
+
+/* Overlay panel. Declared in full here rather than leaning on core's overlay
+   rules, so the panel is correct regardless of which block stylesheets the
+   page happens to load. */
+.wp-block-navigation__responsive-container.is-menu-open {
+	position: fixed;
+	inset: 0;
+	z-index: 200;
+	/* Core sizes this container to its content, which beats `inset: 0` for
+	   determining the used width and height. Resetting both to auto hands
+	   sizing back to the insets — 100vw would overshoot by the scrollbar
+	   width and introduce horizontal overflow while the menu is open. */
+	width: auto !important;
+	height: auto !important;
+	max-width: none !important;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	background: var(--pw-paper);
+	padding: clamp(4.5rem, 12vh, 8rem) var(--wp--preset--spacing--50) clamp(2rem, 6vw, 4rem);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-close {
+	max-width: var(--wp--style--global--wide-size, 1440px);
+	width: 100%;
+	margin-inline: auto;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: clamp(0.5rem, 1.5vw, 1.1rem);
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-close {
+	position: absolute;
+	top: clamp(1.1rem, 3vh, 2rem);
+	right: var(--wp--preset--spacing--50);
+	color: var(--pw-ink);
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: clamp(1.75rem, 7vw, 3.5rem);
+	font-weight: 400;
+	letter-spacing: -0.035em;
+	text-transform: none;
+	line-height: 1.1;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content::after {
+	display: none;
+}
+
+/* ==========================================================================
+   06. Buttons
+   ========================================================================== */
+
+.wp-block-button__link {
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+	text-decoration: none !important;
+	transition: color 0.5s var(--pw-ease), transform 0.4s var(--pw-ease);
+}
+
+/* Fill sweeps up from the bottom edge on hover. */
+.wp-block-button__link::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: var(--pw-brown);
+	transform: translateY(101%);
+	transition: transform 0.6s var(--pw-ease);
+}
+
+.wp-block-button__link:hover::before,
+.wp-block-button__link:focus-visible::before {
+	transform: translateY(0);
+}
+
+.wp-block-button.pw-magnetic .wp-block-button__link {
+	will-change: transform;
+}
+
+/* ==========================================================================
+   07. Hero
+   ========================================================================== */
+
+/* Sizes to the fold minus the sticky header, with padding counted inside the
+   box — the previous version added ~166px of padding on top of a vh-based
+   min-height, so the hero ran past the bottom of a laptop screen. svh keeps
+   mobile honest when browser chrome collapses. */
+.pw-hero {
+	box-sizing: border-box;
+	/* !important because the block carries an inline `min-height:0vh` from the
+	   editor, which a plain class selector cannot beat. */
+	min-height: calc(100svh - var(--pw-header-h, 68px)) !important;
+	display: grid;
+	align-content: center;
+	position: relative;
+	padding-top: clamp(56px, 8vh, 104px) !important;
+	padding-bottom: clamp(72px, 10vh, 128px) !important;
+}
+
+/* Short landscape viewports have no business being 100svh tall. */
+@media (max-height: 600px) and (min-width: 782px) {
+	.pw-hero {
+		min-height: 0 !important;
+		padding-top: clamp(48px, 7vh, 80px) !important;
+		padding-bottom: clamp(56px, 8vh, 96px) !important;
+	}
+
+	.pw-hero__cue {
+		display: none;
+	}
+}
+
+.pw-hero__eyebrow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.9rem;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem;
+	line-height: 1;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	color: var(--pw-ash);
+	margin-bottom: clamp(1rem, 2.2vh, 2rem);
+}
+
+.pw-hero__eyebrow::before,
+.pw-hero__eyebrow::after {
+	content: "";
+	width: clamp(24px, 5vw, 64px);
+	height: 1px;
+	background: var(--pw-hairline);
+}
+
+/* 9.5vw put the headline at 117px on a 1230px laptop, which is what pushed the
+   hero past the fold. Capped against both viewport height and width so the
+   headline shrinks on short screens instead of overflowing them. */
+.pw-hero h1,
+.pw-hero h2 {
+	font-size: clamp(2.25rem, min(6.4vw, 13vh), 6.5rem) !important;
+	line-height: 0.98;
+	letter-spacing: -0.04em;
+	font-weight: 400;
+	margin: 0;
+	max-width: 18ch;
+	margin-inline: auto;
+}
+
+.pw-hero p {
+	max-width: 48ch;
+	margin-inline: auto;
+	font-size: clamp(1rem, 1.15vw, 1.1875rem);
+	line-height: 1.6;
+	color: color-mix(in srgb, var(--pw-ink) 74%, transparent);
+}
+
+.pw-hero .wp-block-buttons {
+	margin-top: clamp(1.25rem, 2.6vh, 2.25rem);
+}
+
+/* Scroll cue pinned to the bottom of the hero. */
+.pw-hero__cue {
+	position: absolute;
+	left: 50%;
+	bottom: clamp(24px, 4vh, 48px);
+	transform: translateX(-50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.65rem;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.6rem;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+}
+
+.pw-hero__cue span {
+	display: block;
+	width: 1px;
+	height: 46px;
+	background: linear-gradient(to bottom, var(--pw-hairline), transparent);
+	position: relative;
+	overflow: hidden;
+}
+
+.pw-hero__cue span::after {
+	content: "";
+	position: absolute;
+	inset-inline: 0;
+	top: -50%;
+	height: 50%;
+	background: var(--pw-brown);
+	animation: pw-cue 2.4s var(--pw-ease) infinite;
+}
+
+@keyframes pw-cue {
+	0%   { top: -50%; }
+	60%  { top: 100%; }
+	100% { top: 100%; }
+}
+
+/* ==========================================================================
+   08. Split-text reveal (hero headline)
+   ========================================================================== */
+
+.pw-split {
+	display: block;
+}
+
+/* One mask per word rather than per line: line boxes change with the
+   viewport, and a per-word mask survives any reflow without remeasuring.
+   The padding/margin pair gives descenders room inside the clip. */
+.pw-split__mask {
+	display: inline-block;
+	overflow: hidden;
+	vertical-align: bottom;
+	padding-bottom: 0.14em;
+	margin-bottom: -0.14em;
+}
+
+.pw-split__word {
+	display: inline-block;
+	transform: translateY(110%) rotate(3deg);
+	opacity: 0;
+	transition:
+		transform 1.05s var(--pw-ease-out),
+		opacity 0.9s var(--pw-ease-out);
+	transition-delay: var(--pw-delay, 0s);
+}
+
+.pw-split.is-in .pw-split__word {
+	transform: translateY(0) rotate(0deg);
+	opacity: 1;
+}
+
+/* The hero's entrance is carried by the split words, so the section itself
+   only needs to fade — a translate on top would double the movement. */
+.pw-js .wp-block-post-content > .pw-hero {
+	transform: none;
+	transition: opacity 0.6s linear;
+}
+
+/* ==========================================================================
+   09. Scroll reveals
+   ========================================================================== */
+
+/* The hidden resting state is keyed on a structural selector rather than a
+   class the script adds, so it applies at first paint. Tagging elements from
+   JS would land after the browser has already painted them and flash. The
+   .pw-js hook is set by an inline snippet in <head>, so a browser with JS
+   disabled never hides anything in the first place. */
+.pw-js .wp-block-post-content > *,
+.pw-js .wp-block-post-template > li,
+.pw-js [data-pw-reveal] {
+	opacity: 0;
+	transform: translateY(28px);
+	transition:
+		opacity var(--pw-dur) var(--pw-ease-out),
+		transform var(--pw-dur) var(--pw-ease-out);
+	transition-delay: var(--pw-delay, 0s);
+}
+
+.pw-js .wp-block-post-content > .pw-in,
+.pw-js .wp-block-post-template > li.pw-in,
+.pw-js [data-pw-reveal].pw-in {
+	opacity: 1;
+	transform: none;
+}
+
+/* Safety net: if the observer never runs (script error, unsupported browser)
+   everything becomes visible a beat after load rather than staying blank. */
+.pw-fallback .wp-block-post-content > *,
+.pw-fallback .wp-block-post-template > li,
+.pw-fallback [data-pw-reveal] {
+	opacity: 1 !important;
+	transform: none !important;
+}
+
+/* ==========================================================================
+   10. Images
+   ========================================================================== */
+
+.wp-block-image {
+	position: relative;
+}
+
+.wp-block-image img {
+	display: block;
+	height: auto;
+	border-radius: 4px;
+}
+
+/* Wipe reveal — the image is uncovered from the bottom edge up. */
+.pw-js .wp-block-image.pw-wipe img {
+	clip-path: inset(0 0 100% 0);
+	transform: scale(1.12);
+	transition:
+		clip-path 1.25s var(--pw-ease-out),
+		transform 1.6s var(--pw-ease-out);
+	transition-delay: var(--pw-delay, 0s);
+}
+
+.pw-js .wp-block-image.pw-wipe.pw-in img {
+	clip-path: inset(0 0 0 0);
+	transform: scale(1);
+}
+
+/* Gentle lift on hover for the editorial images. */
+.wp-block-column .wp-block-image {
+	overflow: hidden;
+	border-radius: 6px;
+}
+
+.wp-block-column .wp-block-image img {
+	transition: transform 1.1s var(--pw-ease);
+}
+
+.wp-block-column .wp-block-image:hover img {
+	transform: scale(1.045);
+}
+
+/* ==========================================================================
+   11. Sections
+   ========================================================================== */
+
+.is-style-section-1 {
+	background: var(--pw-oat) !important;
+	position: relative;
+}
+
+.is-style-section-1::before,
+.is-style-section-1::after {
+	content: "";
+	position: absolute;
+	inset-inline: 0;
+	height: 1px;
+	background: var(--pw-hairline-soft);
+}
+
+.is-style-section-1::before { top: 0; }
+.is-style-section-1::after  { bottom: 0; }
+
+/* Small-caps eyebrow used for section labels. */
+/* TT5 renders this style as a bordered pill. The eyebrow here is a bare
+   label with a leading rule instead, so the pill chrome is cleared. */
+.is-style-text-annotation {
+	font-family: var(--wp--preset--font-family--fira-code) !important;
+	font-size: 0.7rem !important;
+	font-weight: 500 !important;
+	letter-spacing: 0.22em !important;
+	text-transform: uppercase;
+	color: var(--pw-ash) !important;
+	display: flex;
+	align-items: center;
+	gap: 0.8rem;
+	width: max-content;
+	max-width: 100%;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: none !important;
+	padding: 0 !important;
+	margin-bottom: 1.5rem !important;
+}
+
+.is-style-text-annotation::before {
+	content: "";
+	width: 28px;
+	height: 1px;
+	background: var(--pw-brown);
+	flex: none;
+}
+
+.is-style-text-subtitle {
+	font-size: clamp(1.0625rem, 1.25vw, 1.25rem) !important;
+	line-height: 1.7;
+	color: color-mix(in srgb, var(--pw-ink) 78%, transparent) !important;
+	max-width: 54ch;
+}
+
+/* ==========================================================================
+   12. Quote & cover
+   ========================================================================== */
+
+.wp-block-cover {
+	border-radius: 8px;
+	overflow: hidden;
+	background: var(--pw-ink);
+	/* Let the content set the height. A fixed min-height fought the grid below
+	   and left the label stranded in dead space. */
+	min-height: 0 !important;
+	padding: clamp(1.75rem, 4vw, 4rem) !important;
+}
+
+/* The authored markup is two nested `flex / nowrap` rows: a label beside a row
+   holding the quote and the video. At laptop width that squeezed an 80px quote
+   into a 400px column with the label floating in the middle of nowhere. Both
+   rows are re-expressed as grids so each piece gets real space and the whole
+   block reflows cleanly instead of being crushed. */
+.wp-block-cover .wp-block-cover__inner-container > .wp-block-group {
+	display: grid !important;
+	grid-template-columns: 1fr;
+	gap: clamp(1.25rem, 2.5vw, 2rem);
+	align-items: start !important;
+	min-height: 0 !important;
+}
+
+.wp-block-cover .wp-block-cover__inner-container > .wp-block-group > .wp-block-group {
+	display: grid !important;
+	grid-template-columns: 1fr;
+	gap: clamp(1.75rem, 3.5vw, 3rem);
+	align-items: center;
+	width: 100%;
+}
+
+/* Side by side only once there is genuinely room for both. */
+@media (min-width: 1000px) {
+	.wp-block-cover .wp-block-cover__inner-container > .wp-block-group > .wp-block-group {
+		grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+		align-items: center;
+	}
+}
+
+/* The quote carries a nested constrained group pinned to 400px, which is what
+   made the display type wrap so badly. */
+.wp-block-cover .wp-block-quote,
+.wp-block-cover .wp-block-quote .wp-block-group {
+	max-width: none !important;
+	width: 100%;
+}
+
+.wp-block-cover .wp-block-quote p {
+	font-size: clamp(1.5rem, 3vw, 2.75rem) !important;
+	line-height: 1.12;
+	text-align: left !important;
+}
+
+.wp-block-cover .wp-block-quote .wp-block-group {
+	display: block !important;
+}
+
+.wp-block-cover,
+.wp-block-cover a,
+.wp-block-cover .is-style-text-annotation {
+	color: var(--pw-paper) !important;
+}
+
+.wp-block-cover .is-style-text-annotation::before {
+	background: var(--pw-crema);
+}
+
+.wp-block-cover .wp-block-cover__background {
+	background: radial-gradient(120% 90% at 20% 10%, rgba(166, 124, 82, 0.55), transparent 60%),
+		linear-gradient(180deg, rgba(30, 21, 18, 0.35), rgba(30, 21, 18, 0.8));
+	opacity: 1 !important;
+}
+
+.wp-block-quote.is-style-plain {
+	border: 0;
+	padding: 0;
+	margin: 0;
+}
+
+.wp-block-quote p {
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-weight: 300;
+	line-height: 1.15;
+	letter-spacing: -0.03em;
+	text-wrap: balance;
+}
+
+.wp-block-quote cite {
+	display: block;
+	margin-top: 1.75rem;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.7rem;
+	font-style: normal;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	opacity: 0.75;
+}
+
+.wp-block-quote cite sub {
+	bottom: 0;
+	font-size: inherit;
+	opacity: 0.7;
+}
+
+/* The video sits in a nowrap flex row beside the quote, which refuses to
+   shrink — so the embed collapsed to zero width and the video was invisible.
+   Give it a real flex basis and let the row wrap instead of crushing it. */
+.wp-block-cover .wp-block-group.is-nowrap,
+.wp-block-cover .wp-block-group.is-layout-flex {
+	flex-wrap: wrap;
+}
+
+/* Core's flex-layout container rule sets `flex: 1 1 0%` on its children, which
+   out-specifies a plain class selector — hence !important here. */
+.wp-block-embed {
+	flex: 1 1 clamp(280px, 32vw, 520px) !important;
+	min-width: min(100%, 280px) !important;
+	width: 100%;
+}
+
+.wp-block-embed__wrapper {
+	width: 100%;
+}
+
+.wp-block-embed iframe {
+	border-radius: 6px;
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	height: auto;
+}
+
+/* ==========================================================================
+   13. Marquee
+   ========================================================================== */
+
+.pw-marquee {
+	--pw-marquee-dur: 34s;
+	position: relative;
+	overflow: hidden;
+	padding: clamp(1.15rem, 2vw, 1.75rem) 0;
+	border-top: 1px solid var(--pw-hairline);
+	border-bottom: 1px solid var(--pw-hairline);
+	background: var(--pw-paper);
+	user-select: none;
+}
+
+.pw-marquee__track {
+	display: flex;
+	width: max-content;
+	animation: pw-marquee var(--pw-marquee-dur) linear infinite;
+}
+
+.pw-marquee:hover .pw-marquee__track {
+	animation-play-state: paused;
+}
+
+.pw-marquee__item {
+	display: flex;
+	align-items: center;
+	gap: clamp(1.5rem, 3vw, 3rem);
+	padding-inline: clamp(0.75rem, 1.5vw, 1.5rem);
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: clamp(1.5rem, 3.4vw, 3.25rem);
+	font-weight: 400;
+	line-height: 1.1;
+	letter-spacing: -0.03em;
+	white-space: nowrap;
+	color: var(--pw-ink);
+}
+
+.pw-marquee__item::after {
+	content: "";
+	width: clamp(7px, 0.9vw, 11px);
+	height: clamp(7px, 0.9vw, 11px);
+	border-radius: 50%;
+	background: var(--pw-crema);
+	flex: none;
+}
+
+@keyframes pw-marquee {
+	from { transform: translate3d(0, 0, 0); }
+	to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* ==========================================================================
+   14. Footer
+   ========================================================================== */
+
+.wp-site-blocks > footer {
+	background: var(--pw-ink);
+	color: var(--pw-paper);
+	margin-top: 0;
+}
+
+.wp-site-blocks > footer .wp-block-group[style*="border-width:1px"],
+.wp-site-blocks > footer .wp-block-group[style*="border-width: 1px"] {
+	border-width: 0 !important;
+}
+
+.wp-site-blocks > footer a,
+.wp-site-blocks > footer .wp-block-site-title a,
+.wp-site-blocks > footer p {
+	color: var(--pw-paper) !important;
+}
+
+.wp-site-blocks > footer a:hover {
+	color: var(--pw-crema) !important;
+}
+
+.wp-site-blocks > footer .wp-block-site-title {
+	font-size: clamp(2.25rem, 6vw, 5rem);
+	line-height: 1;
+	letter-spacing: -0.045em;
+}
+
+/* The vertical footer menu inherits the global block gap, which is tuned for
+   prose and reads far too loose as a list. */
+.wp-site-blocks > footer .wp-block-navigation__container {
+	gap: 0.85rem;
+}
+
+.wp-site-blocks > footer .wp-block-site-tagline {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.7rem;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	opacity: 0.6;
+	margin-top: 0.85rem;
+}
+
+.pw-footer__rule {
+	height: 1px;
+	background: color-mix(in srgb, var(--pw-paper) 18%, transparent);
+	margin-block: clamp(2rem, 5vw, 4rem);
+}
+
+.pw-colophon {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem 2rem;
+	justify-content: space-between;
+	align-items: baseline;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	opacity: 0.65;
+}
+
+/* ==========================================================================
+   14b. Tables
+   ========================================================================== */
+
+/* Wide tables scroll inside their own figure rather than pushing the page. */
+.wp-block-table {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.wp-block-table table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 0;
+	font-size: clamp(0.875rem, 1.1vw, 1rem);
+}
+
+.wp-block-table th,
+.wp-block-table td {
+	border: 0;
+	border-bottom: 1px solid var(--pw-hairline);
+	padding: 1rem 1.25rem 1rem 0;
+	text-align: left;
+	vertical-align: baseline;
+}
+
+.wp-block-table thead th {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+	border-bottom-color: var(--pw-ink);
+	padding-bottom: 0.85rem;
+}
+
+/* The day column reads as the row's label. */
+.wp-block-table tbody td:first-child {
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: 1.0625em;
+	white-space: nowrap;
+	padding-right: 2rem;
+}
+
+.wp-block-table tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+.wp-block-table tbody tr {
+	transition: background-color 0.4s var(--pw-ease);
+}
+
+.wp-block-table tbody tr:hover {
+	background: color-mix(in srgb, var(--pw-oat) 55%, transparent);
+}
+
+.wp-block-table figcaption {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+	margin-top: 1rem;
+}
+
+/* ==========================================================================
+   15. Blog / archive
+   ========================================================================== */
+
+.wp-block-post-title a {
+	text-decoration: none !important;
+	background-image: linear-gradient(currentColor, currentColor);
+	background-size: 0% 1px;
+	background-repeat: no-repeat;
+	background-position: left bottom;
+	transition: background-size 0.6s var(--pw-ease);
+}
+
+.wp-block-post-title a:hover {
+	background-size: 100% 1px;
+}
+
+.wp-block-post-date,
+.wp-block-post-terms {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+}
+
+.wp-block-post-featured-image {
+	overflow: hidden;
+	border-radius: 6px;
+}
+
+.wp-block-post-featured-image img {
+	transition: transform 1.1s var(--pw-ease);
+}
+
+.wp-block-post-featured-image:hover img {
+	transform: scale(1.05);
+}
+
+/* ==========================================================================
+   16. Plugin surfaces — Contact Form 7, WP Job Manager, FooGallery
+   ========================================================================== */
+
+.wpcf7 input[type="text"],
+.wpcf7 input[type="email"],
+.wpcf7 input[type="tel"],
+.wpcf7 input[type="url"],
+.wpcf7 input[type="date"],
+.wpcf7 input[type="number"],
+.wpcf7 select,
+.wpcf7 textarea {
+	width: 100%;
+	background: transparent;
+	border: 0;
+	border-bottom: 1px solid var(--pw-hairline);
+	border-radius: 0;
+	padding: 0.9rem 0;
+	font-family: inherit;
+	font-size: 1rem;
+	color: var(--pw-ink);
+	transition: border-color 0.4s var(--pw-ease);
+}
+
+.wpcf7 input:focus,
+.wpcf7 select:focus,
+.wpcf7 textarea:focus {
+	outline: 0;
+	border-bottom-color: var(--pw-brown);
+}
+
+.wpcf7 label {
+	display: block;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+	margin-bottom: 0.35rem;
+}
+
+.wpcf7 input[type="submit"] {
+	border: 0;
+	border-radius: 999px;
+	background: var(--pw-ink);
+	color: var(--pw-paper);
+	padding: 1.05em 2.4em;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.72rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background-color 0.45s var(--pw-ease), transform 0.35s var(--pw-ease);
+}
+
+.wpcf7 input[type="submit"]:hover {
+	background: var(--pw-brown);
+	transform: translateY(-2px);
+}
+
+/* WP Job Manager listings read as an editorial index. */
+ul.job_listings {
+	border-top: 1px solid var(--pw-hairline);
+}
+
+ul.job_listings li.job_listing a {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.5rem 1.5rem;
+	padding: clamp(1.25rem, 2.5vw, 2rem) 0;
+	border-bottom: 1px solid var(--pw-hairline);
+	text-decoration: none !important;
+	transition: padding-inline-start 0.5s var(--pw-ease), background-color 0.5s var(--pw-ease);
+}
+
+ul.job_listings li.job_listing a:hover {
+	padding-inline-start: 1.25rem;
+	background: color-mix(in srgb, var(--pw-oat) 60%, transparent);
+}
+
+ul.job_listings li.job_listing h3 {
+	font-size: clamp(1.25rem, 2.2vw, 1.875rem);
+	margin: 0;
+}
+
+ul.job_listings li.job_listing .location,
+ul.job_listings li.job_listing .job-type,
+ul.job_listings li.job_listing .date {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+}
+
+.fg-item-inner img,
+.fg-image {
+	border-radius: 4px;
+}
+
+/* WP Google Maps ships the canvas floated and capped at its own max-width, so
+   it rendered as a 300px block inside a much wider column. */
+#wpgmza_map,
+.wpgmza_map {
+	width: 100% !important;
+	max-width: 100% !important;
+	float: none !important;
+	border-radius: 6px;
+	overflow: hidden !important;
+}
+
+/* The float above was the plugin's clearing mechanism; replace it. */
+.wpgmza_map + * {
+	clear: both;
+}
+
+/* ==========================================================================
+   17. Responsive
+   ========================================================================== */
+
+@media (max-width: 781px) {
+	.pw-hero {
+		min-height: 78vh;
+	}
+
+	.pw-hero h1,
+	.pw-hero h2 {
+		font-size: clamp(2.5rem, 13vw, 4.5rem) !important;
+	}
+
+	/* The tagline competes with the logo at small sizes. */
+	.wp-site-blocks > header .header-tagline,
+	.wp-site-blocks > header p.has-small-font-size {
+		display: none;
+	}
+
+	.is-style-text-subtitle {
+		max-width: none;
+	}
+
+	.pw-colophon {
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+}
+
+/* ==========================================================================
+   18. Reduced motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	.pawffee-grain,
+	.pw-hero__cue span::after {
+		animation: none;
+	}
+
+	.pw-marquee__track {
+		animation: none;
+	}
+
+	.pw-js [data-pw-reveal],
+	.pw-js [data-pw-reveal].pw-in {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+
+	.pw-split__word {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+
+	.pw-js .wp-block-image.pw-wipe img {
+		clip-path: none;
+		transform: none;
+		transition: none;
+	}
+}
+
+/* ==========================================================================
+   19. v3.1 — Intro loader (first homepage visit per session, ~1.1s)
+   ========================================================================== */
+
+.pw-loader {
+	position: fixed;
+	inset: 0;
+	z-index: 10001;
+	display: none;
+	pointer-events: none;
+}
+
+.pw-intro .pw-loader,
+.pw-loader.is-done {
+	display: block;
+}
+
+.pw-intro body {
+	overflow: hidden;
+}
+
+.pw-loader__layer {
+	position: absolute;
+	inset: 0;
+	will-change: transform;
+}
+
+.pw-loader__layer--accent {
+	background: var(--pw-crema);
+}
+
+.pw-loader__layer--ink {
+	background: var(--pw-ink);
+	color: var(--pw-paper);
+	display: grid;
+	place-items: center;
+	overflow: hidden;
+}
+
+/* Lift-off: ink leaves first, the crema panel trails a beat behind it. */
+.pw-loader.is-done .pw-loader__layer {
+	transform: translateY(-100%);
+	transition: transform 0.75s cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+.pw-loader.is-done .pw-loader__layer--accent {
+	transition-delay: 0.07s;
+}
+
+.pw-loader.is-done .pw-loader__center {
+	transform: translateY(-14vh);
+	opacity: 0;
+	transition: transform 0.75s cubic-bezier(0.83, 0, 0.17, 1), opacity 0.4s linear;
+}
+
+.pw-loader__center {
+	display: grid;
+	justify-items: center;
+	gap: 1.1rem;
+	text-align: center;
+}
+
+.pw-loader__paw {
+	width: 34px;
+	height: 34px;
+	fill: var(--pw-crema);
+	animation: pw-paw-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.pw-loader__brand {
+	display: block;
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: clamp(2.75rem, 8vw, 7rem);
+	line-height: 1;
+	letter-spacing: -0.05em;
+	color: var(--pw-paper);
+	font-variation-settings: "opsz" 144;
+	overflow: hidden;
+	padding-bottom: 0.08em;
+}
+
+.pw-loader__brand span {
+	display: inline-block;
+	transform: translateY(105%);
+	animation: pw-letter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation-delay: calc(0.05s + var(--i) * 0.028s);
+}
+
+.pw-loader__line {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem;
+	letter-spacing: 0.3em;
+	text-transform: uppercase;
+	color: color-mix(in srgb, var(--pw-paper) 60%, transparent);
+	animation: pw-fade-up 0.5s 0.3s var(--pw-ease-out) both;
+}
+
+.pw-loader__meta {
+	position: absolute;
+	left: var(--wp--preset--spacing--50);
+	right: var(--wp--preset--spacing--50);
+	bottom: clamp(1.5rem, 4vh, 2.5rem);
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: color-mix(in srgb, var(--pw-paper) 55%, transparent);
+}
+
+.pw-loader__count {
+	font-variant-numeric: tabular-nums;
+	color: var(--pw-crema);
+	min-width: 3ch;
+	text-align: right;
+}
+
+.pw-loader__count::after {
+	content: "%";
+	margin-left: 0.15em;
+	opacity: 0.7;
+}
+
+.pw-loader__bar {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 2px;
+	background: var(--pw-crema);
+	transform: scaleX(0);
+	transform-origin: left center;
+}
+
+@keyframes pw-letter {
+	to { transform: translateY(0); }
+}
+
+@keyframes pw-paw-in {
+	from { opacity: 0; transform: scale(0.4) rotate(-20deg); }
+	to   { opacity: 1; transform: none; }
+}
+
+@keyframes pw-fade-up {
+	from { opacity: 0; transform: translateY(8px); }
+	to   { opacity: 1; transform: none; }
+}
+
+/* ==========================================================================
+   20. v3.1 — Page transition (two panels, ~0.35s out / ~0.7s in)
+   ========================================================================== */
+
+.pw-curtain {
+	position: fixed;
+	inset: 0;
+	z-index: 10000;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.pw-curtain__layer {
+	position: absolute;
+	inset: 0;
+	transform: translateY(100%);
+	will-change: transform;
+}
+
+.pw-curtain__layer--accent {
+	background: var(--pw-crema);
+}
+
+.pw-curtain__layer--ink {
+	background: var(--pw-ink);
+	display: grid;
+	place-items: center;
+	border-radius: 0;
+}
+
+.pw-curtain__content {
+	display: grid;
+	justify-items: center;
+	gap: 1rem;
+	text-align: center;
+	opacity: 0;
+	transform: translateY(24px);
+}
+
+.pw-curtain__paw {
+	width: 26px;
+	height: 26px;
+	fill: var(--pw-crema);
+}
+
+.pw-curtain__label {
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: clamp(2.25rem, 6vw, 5rem);
+	line-height: 1;
+	letter-spacing: -0.05em;
+	color: var(--pw-paper);
+	font-variation-settings: "opsz" 144;
+	padding-inline: 1.5rem;
+}
+
+/* Leaving: crema sweeps up first, espresso lands right on its heels. */
+.pw-leaving .pw-curtain {
+	pointer-events: auto;
+}
+
+.pw-leaving .pw-curtain__layer {
+	transform: translateY(0);
+	transition: transform 0.34s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.pw-leaving .pw-curtain__layer--ink {
+	transition-delay: 0.05s;
+}
+
+.pw-leaving .pw-curtain__content {
+	opacity: 1;
+	transform: none;
+	transition: opacity 0.2s 0.16s linear, transform 0.4s 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Arriving: start fully covered, no animation. */
+.pw-arrive .pw-curtain__layer {
+	transform: translateY(0);
+	transition: none;
+}
+
+.pw-arrive .pw-curtain__content {
+	opacity: 1;
+	transform: none;
+	transition: none;
+}
+
+/* Then keep travelling upward and off — ink first, crema trailing. */
+.pw-lifting .pw-curtain__layer {
+	transform: translateY(-100%);
+	transition: transform 0.62s cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+.pw-lifting .pw-curtain__layer--accent {
+	transition-delay: 0.06s;
+}
+
+.pw-lifting .pw-curtain__content {
+	opacity: 0;
+	transform: translateY(-10vh);
+	transition: opacity 0.25s linear, transform 0.62s cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+.pw-progress {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 150;
+	height: 2px;
+	background: var(--pw-brown);
+	transform: scaleX(0);
+	transform-origin: left center;
+	pointer-events: none;
+}
+
+/* ==========================================================================
+   21. v3 — Cursor label, header behaviour
+   ========================================================================== */
+
+.pawffee-cursor__label {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.62rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--pw-paper);
+	opacity: 0;
+	transition: opacity 0.25s linear;
+}
+
+.pawffee-cursor {
+	transition: width 0.4s var(--pw-ease), height 0.4s var(--pw-ease),
+		margin 0.4s var(--pw-ease), opacity 0.3s linear, scale 0.25s var(--pw-ease),
+		background-color 0.4s var(--pw-ease), border-color 0.4s var(--pw-ease);
+}
+
+.pawffee-cursor.is-label {
+	width: 92px;
+	height: 92px;
+	margin: -46px 0 0 -46px;
+	background: var(--pw-ink);
+	border-color: transparent;
+}
+
+.pawffee-cursor.is-label .pawffee-cursor__label {
+	opacity: 1;
+	transition-delay: 0.1s;
+}
+
+.pawffee-cursor.is-label .pawffee-cursor__dot {
+	opacity: 0;
+}
+
+.pawffee-cursor.is-down {
+	scale: 0.82;
+}
+
+.wp-site-blocks > header {
+	transition: border-color 0.5s var(--pw-ease), box-shadow 0.5s var(--pw-ease),
+		transform 0.6s var(--pw-ease);
+}
+
+.pw-header-hidden .wp-site-blocks > header {
+	transform: translateY(-101%);
+}
+
+.pw-header__right {
+	align-items: center;
+}
+
+.pw-header__cta .wp-block-button__link {
+	padding: 0.85em 1.5em !important;
+	font-size: 0.66rem !important;
+}
+
+/* Live open / closed indicator beside the logo. */
+.wp-site-blocks > header .header-tagline {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	white-space: nowrap;
+}
+
+.pw-live-dot {
+	position: relative;
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--pw-ash);
+	flex: none;
+}
+
+.pw-is-open .pw-live-dot {
+	background: #5E8B5A;
+}
+
+.pw-is-open .pw-live-dot::after {
+	content: "";
+	position: absolute;
+	inset: -4px;
+	border-radius: 50%;
+	border: 1px solid #5E8B5A;
+	animation: pw-ping 2s var(--pw-ease-out) infinite;
+}
+
+@keyframes pw-ping {
+	from { transform: scale(0.6); opacity: 1; }
+	to   { transform: scale(1.8); opacity: 0; }
+}
+
+@media (max-width: 1280px) {
+	.wp-site-blocks > header .header-tagline {
+		display: none;
+	}
+}
+
+@media (max-width: 1100px) {
+	.pw-header__cta {
+		display: none;
+	}
+}
+
+/* ==========================================================================
+   22. v3 — Buttons (outline + light variants)
+   ========================================================================== */
+
+.wp-block-button.is-style-outline > .wp-block-button__link {
+	background: transparent;
+	color: var(--pw-ink);
+	border: 1px solid color-mix(in srgb, var(--pw-ink) 35%, transparent);
+	padding: 1.05em 2.1em;
+}
+
+.wp-block-button.is-style-outline > .wp-block-button__link:hover {
+	color: var(--pw-paper);
+	border-color: var(--pw-ink);
+}
+
+.wp-block-button.is-style-outline > .wp-block-button__link::before {
+	background: var(--pw-ink);
+}
+
+.pw-btn-light > .wp-block-button__link {
+	background: var(--pw-paper);
+	color: var(--pw-ink) !important;
+}
+
+.pw-btn-light > .wp-block-button__link::before {
+	background: var(--pw-crema);
+}
+
+.pw-btn-light.is-style-outline > .wp-block-button__link {
+	background: transparent;
+	color: var(--pw-paper) !important;
+	border-color: color-mix(in srgb, var(--pw-paper) 35%, transparent);
+}
+
+.pw-btn-light.is-style-outline > .wp-block-button__link:hover {
+	color: var(--pw-ink) !important;
+	border-color: var(--pw-paper);
+}
+
+.pw-btn-light.is-style-outline > .wp-block-button__link::before {
+	background: var(--pw-paper);
+}
+
+/* The footer's generic link-hover colour would otherwise turn the label
+   crema on a crema fill. */
+.wp-site-blocks > footer .pw-btn-light > .wp-block-button__link:hover,
+.wp-site-blocks > footer .pw-btn-light > .wp-block-button__link:focus-visible {
+	color: var(--pw-ink) !important;
+}
+
+.wp-block-buttons {
+	gap: 0.75rem;
+}
+
+/* ==========================================================================
+   23. v3 — Home: hero, showcase, manifesto
+   ========================================================================== */
+
+.pw-home-hero {
+	padding-inline: var(--wp--preset--spacing--50) !important;
+	margin-top: 0 !important;
+}
+
+.pw-home-hero h1 {
+	font-size: clamp(3rem, min(9vw, 16vh), 10rem) !important;
+	line-height: 0.92;
+	letter-spacing: -0.055em;
+	max-width: 13ch;
+	font-variation-settings: "SOFT" 30, "WONK" 1, "opsz" 144;
+}
+
+h1 em,
+h2 em,
+.pw-split em {
+	font-style: italic;
+	font-weight: 300;
+	color: var(--pw-brown);
+	/* Italic overhang eats the following word space at tight tracking. */
+	padding-right: 0.08em;
+}
+
+.pw-steps h2 em,
+.pw-footer__headline em {
+	color: var(--pw-crema);
+}
+
+@media (max-width: 600px) {
+	.pw-hero__eyebrow {
+		white-space: normal;
+		text-align: center;
+		line-height: 1.6;
+		letter-spacing: 0.18em;
+	}
+
+	.pw-hero__eyebrow::before,
+	.pw-hero__eyebrow::after {
+		display: none;
+	}
+
+	.pw-home-hero h1 {
+		font-size: clamp(2.75rem, 14vw, 4.5rem) !important;
+	}
+
+	.pw-hero .wp-block-buttons {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.pw-hero .wp-block-button__link {
+		width: 100%;
+	}
+}
+
+.pw-home-hero > p:not(.pw-hero__eyebrow) {
+	margin-top: clamp(1.25rem, 3vh, 2.25rem);
+}
+
+/* Hero parts that are not split words fade up after the headline. */
+.pw-js .pw-hero > p,
+.pw-js .pw-hero > .wp-block-buttons {
+	opacity: 0;
+	transform: translateY(18px);
+	transition: opacity 0.9s var(--pw-ease-out), transform 0.9s var(--pw-ease-out);
+}
+
+.pw-js .pw-hero > .pw-hero__eyebrow { transition-delay: 0.05s; }
+.pw-js .pw-hero > p:not(.pw-hero__eyebrow) { transition-delay: 0.55s; }
+.pw-js .pw-hero > .wp-block-buttons { transition-delay: 0.7s; }
+
+.pw-js .pw-hero.pw-in > p,
+.pw-js .pw-hero.pw-in > .wp-block-buttons,
+.pw-fallback .pw-hero > * {
+	opacity: 1;
+	transform: none;
+}
+
+.pw-fallback .pw-split__word {
+	opacity: 1;
+	transform: none;
+}
+
+/* Full-bleed showcase that opens up on scroll. */
+.pw-showcase {
+	margin-top: 0 !important;
+	padding: 0 !important;
+}
+
+.pw-js .wp-block-post-content > .pw-showcase {
+	opacity: 1;
+	transform: none;
+}
+
+.pw-expand {
+	margin: 0 !important;
+	overflow: hidden;
+	height: min(100svh, 62vw);
+	border-radius: 0 !important;
+	clip-path: inset(5% 9% round 28px);
+	will-change: clip-path;
+}
+
+.pw-expand img {
+	width: 100%;
+	height: 100% !important;
+	object-fit: cover;
+	border-radius: 0 !important;
+	transform: scale(1.18);
+	transform-origin: center;
+	will-change: transform;
+}
+
+.pw-manifesto-wrap {
+	padding-top: clamp(6rem, 16vh, 12rem) !important;
+	padding-bottom: clamp(6rem, 16vh, 12rem) !important;
+	margin-top: 0 !important;
+}
+
+.pw-manifesto {
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: clamp(1.9rem, 4.2vw, 4.25rem);
+	line-height: 1.08;
+	letter-spacing: -0.035em;
+	font-weight: 400;
+	font-variation-settings: "opsz" 144;
+	text-wrap: balance;
+	margin: 0;
+}
+
+.pw-manifesto__word {
+	color: color-mix(in srgb, var(--pw-ink) 16%, transparent);
+	transition: color 0.45s var(--pw-ease);
+}
+
+.pw-manifesto__word.is-lit,
+.pw-manifesto.is-static .pw-manifesto__word {
+	color: var(--pw-ink);
+}
+
+/* ==========================================================================
+   24. v3 — Home: about, stats
+   ========================================================================== */
+
+.pw-about {
+	padding-top: clamp(5rem, 12vw, 10rem) !important;
+	padding-bottom: clamp(5rem, 12vw, 10rem) !important;
+	margin-top: 0 !important;
+}
+
+.pw-about__grid {
+	gap: clamp(2.5rem, 7vw, 8rem) !important;
+	align-items: center !important;
+}
+
+.pw-about__media {
+	position: relative;
+	padding-bottom: clamp(3rem, 8vw, 6rem);
+}
+
+.pw-about__main {
+	overflow: hidden;
+	border-radius: 10px;
+	aspect-ratio: 4 / 5;
+	margin: 0 !important;
+}
+
+.pw-about__main img {
+	width: 100%;
+	height: 114% !important;
+	object-fit: cover;
+	margin-top: -7%;
+	border-radius: 0 !important;
+}
+
+.wp-block-column .pw-about__main:hover img {
+	transform: none;
+}
+
+.pw-about__float {
+	position: absolute !important;
+	right: clamp(-4rem, -4vw, -1rem);
+	bottom: 0;
+	width: clamp(130px, 40%, 270px);
+	margin: 0 !important;
+	border-radius: 12px !important;
+	border: 6px solid var(--pw-oat);
+	box-shadow: 0 30px 60px -30px rgba(30, 21, 18, 0.45);
+	aspect-ratio: 1;
+	z-index: 2;
+}
+
+.pw-about__float img {
+	width: 100%;
+	height: 100% !important;
+	object-fit: cover;
+	border-radius: 6px !important;
+}
+
+.pw-about h2 {
+	margin-block: 0 1.75rem;
+	max-width: 12ch;
+}
+
+.pw-about .wp-block-buttons {
+	margin-top: 2rem;
+}
+
+.pw-stats {
+	padding-block: clamp(4rem, 9vw, 7rem) !important;
+	margin-top: 0 !important;
+	border-bottom: 1px solid var(--pw-hairline);
+}
+
+.pw-stats .wp-block-columns {
+	gap: 0 !important;
+}
+
+.pw-stats .wp-block-column {
+	padding: 0 clamp(1rem, 2vw, 2rem);
+	border-left: 1px solid var(--pw-hairline);
+}
+
+.pw-stats .wp-block-column:first-child {
+	border-left: 0;
+	padding-left: 0;
+}
+
+.pw-stat__num {
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: clamp(3.5rem, 8vw, 8rem);
+	line-height: 0.9;
+	letter-spacing: -0.06em;
+	font-variant-numeric: tabular-nums;
+	font-variation-settings: "opsz" 144;
+	margin: 0 0 1rem;
+	color: var(--pw-ink);
+}
+
+.pw-stat__label {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	line-height: 1.6;
+	color: var(--pw-ash);
+	max-width: 20ch;
+	margin: 0;
+}
+
+@media (max-width: 781px) {
+	.pw-stats .wp-block-columns {
+		display: grid !important;
+		grid-template-columns: 1fr 1fr;
+		gap: 2.5rem 0 !important;
+	}
+
+	.pw-stats .wp-block-column:nth-child(odd) {
+		border-left: 0;
+		padding-left: 0;
+	}
+
+	.pw-about__float {
+		right: 0;
+	}
+}
+
+/* ==========================================================================
+   25. v3 — Section heads, residents cards
+   ========================================================================== */
+
+.pw-residents,
+.pw-journal {
+	padding-block: clamp(5rem, 12vw, 10rem) !important;
+	margin-top: 0 !important;
+}
+
+.pw-section-head {
+	gap: 2rem !important;
+	margin-bottom: clamp(2.5rem, 6vw, 5rem) !important;
+}
+
+.pw-section-head h2 {
+	margin: 0;
+	max-width: 14ch;
+}
+
+.pw-section-head .is-style-text-annotation {
+	margin-bottom: 1.25rem !important;
+}
+
+.pw-cards {
+	gap: clamp(1.25rem, 2.5vw, 2.5rem) !important;
+}
+
+.pw-card {
+	position: relative;
+}
+
+/* Stagger the middle card down for an editorial rhythm. */
+@media (min-width: 782px) {
+	.pw-card:nth-child(2) {
+		margin-top: clamp(3rem, 8vw, 7rem);
+	}
+}
+
+.pw-card .wp-block-image {
+	overflow: hidden;
+	border-radius: 10px;
+	aspect-ratio: 4 / 5;
+	margin-bottom: 1.25rem;
+	transition: transform 0.6s var(--pw-ease), opacity var(--pw-dur) var(--pw-ease-out);
+}
+
+.pw-card .wp-block-image a,
+.pw-card .wp-block-image img {
+	display: block;
+	width: 100%;
+	height: 100% !important;
+}
+
+.pw-card .wp-block-image img {
+	object-fit: cover;
+	border-radius: 0 !important;
+	filter: saturate(0.92);
+}
+
+.pw-card:hover .wp-block-image img {
+	scale: 1.06;
+	filter: saturate(1.05);
+}
+
+.pw-card .wp-block-image img {
+	transition: clip-path 1.25s var(--pw-ease-out), transform 1.6s var(--pw-ease-out),
+		scale 1.2s var(--pw-ease), filter 0.8s var(--pw-ease);
+}
+
+.pw-card__meta {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.66rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+	margin: 0 0 0.5rem !important;
+}
+
+.pw-card h3 {
+	font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+	margin: 0 0 0.5rem !important;
+}
+
+.pw-card p:not(.pw-card__meta) {
+	margin: 0;
+	color: color-mix(in srgb, var(--pw-ink) 72%, transparent);
+}
+
+/* ==========================================================================
+   26. v3 — How a visit works (dark band)
+   ========================================================================== */
+
+.pw-steps {
+	padding-block: clamp(5rem, 12vw, 10rem) !important;
+	margin-top: 0 !important;
+	--pw-hairline: color-mix(in srgb, var(--pw-paper) 16%, transparent);
+}
+
+.pw-steps .is-style-text-annotation {
+	color: color-mix(in srgb, var(--pw-paper) 60%, transparent) !important;
+}
+
+.pw-steps .is-style-text-annotation::before {
+	background: var(--pw-crema);
+}
+
+.pw-steps h2 {
+	max-width: 14ch;
+	margin: 0 0 clamp(3rem, 7vw, 6rem);
+	color: var(--pw-paper);
+}
+
+.pw-steps__grid {
+	gap: 0 !important;
+	border-top: 1px solid var(--pw-hairline);
+}
+
+.pw-step {
+	position: relative;
+	padding: clamp(1.75rem, 3vw, 2.75rem) clamp(1rem, 2.5vw, 2.5rem) clamp(1.5rem, 3vw, 2.5rem) 0;
+	border-right: 1px solid var(--pw-hairline);
+}
+
+.pw-step:last-child {
+	border-right: 0;
+}
+
+.pw-step + .pw-step {
+	padding-left: clamp(1rem, 2.5vw, 2.5rem);
+}
+
+.pw-step::before {
+	content: "";
+	position: absolute;
+	top: -1px;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: var(--pw-crema);
+	transform: scaleX(0);
+	transform-origin: left center;
+	transition: transform 0.8s var(--pw-ease);
+}
+
+.pw-step:hover::before {
+	transform: scaleX(1);
+}
+
+.pw-step__num {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.7rem;
+	letter-spacing: 0.2em;
+	color: var(--pw-crema);
+	margin: 0 0 clamp(2.5rem, 6vw, 5rem) !important;
+}
+
+.pw-step h3 {
+	font-size: clamp(1.6rem, 2.4vw, 2.25rem);
+	color: var(--pw-paper);
+	margin: 0 0 0.85rem !important;
+}
+
+.pw-step p:not(.pw-step__num) {
+	color: color-mix(in srgb, var(--pw-paper) 68%, transparent);
+	max-width: 32ch;
+	margin: 0;
+}
+
+@media (max-width: 781px) {
+	.pw-step,
+	.pw-step + .pw-step {
+		border-right: 0;
+		border-bottom: 1px solid var(--pw-hairline);
+		padding-left: 0;
+	}
+
+	.pw-step__num {
+		margin-bottom: 1.25rem !important;
+	}
+}
+
+/* ==========================================================================
+   27. v3 — Journal grid
+   ========================================================================== */
+
+.pw-stories .wp-block-post-template {
+	gap: clamp(1.25rem, 2.5vw, 2.5rem) !important;
+}
+
+.pw-stories .wp-block-post-template > li {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.pw-stories .wp-block-post-featured-image {
+	margin: 0 0 1.25rem;
+	border-radius: 10px;
+}
+
+.pw-stories .wp-block-post-featured-image img {
+	height: 100% !important;
+	object-fit: cover;
+}
+
+.pw-stories .wp-block-post-date {
+	margin: 0 0 0.6rem;
+}
+
+.pw-stories .wp-block-post-title {
+	font-size: clamp(1.4rem, 2vw, 1.85rem);
+	line-height: 1.12;
+	margin: 0;
+}
+
+@media (max-width: 781px) {
+	.pw-stories .wp-block-post-template {
+		grid-template-columns: 1fr !important;
+	}
+}
+
+/* ==========================================================================
+   28. v3 — Visit band
+   ========================================================================== */
+
+.pw-visit {
+	padding-block: 0 clamp(4rem, 9vw, 8rem) !important;
+	margin-top: 0 !important;
+}
+
+.pw-visit .wp-block-cover {
+	border-radius: 16px;
+	padding: clamp(2rem, 5vw, 5rem) !important;
+}
+
+.pw-visit .wp-block-quote p {
+	font-size: clamp(2rem, 4.2vw, 4.25rem) !important;
+	line-height: 1.02;
+	letter-spacing: -0.045em;
+}
+
+/* ==========================================================================
+   29. v3 — Footer
+   ========================================================================== */
+
+.wp-site-blocks > footer {
+	margin-block-start: 0;
+}
+
+.pw-footer {
+	padding-top: clamp(5rem, 12vw, 10rem) !important;
+	padding-bottom: clamp(1.5rem, 3vw, 2.5rem) !important;
+	overflow: hidden;
+	--pw-hairline: color-mix(in srgb, var(--pw-paper) 16%, transparent);
+}
+
+.pw-footer .is-style-text-annotation {
+	color: color-mix(in srgb, var(--pw-paper) 55%, transparent) !important;
+	margin-bottom: 1.1rem !important;
+}
+
+.pw-footer .is-style-text-annotation::before {
+	background: var(--pw-crema);
+}
+
+.pw-footer__headline {
+	font-size: clamp(2.75rem, 7.5vw, 8rem) !important;
+	line-height: 0.95;
+	letter-spacing: -0.05em;
+	max-width: 14ch;
+	margin: 0 0 clamp(2rem, 4vw, 3rem) !important;
+	color: var(--pw-paper);
+	font-variation-settings: "opsz" 144;
+}
+
+.pw-footer__cols {
+	margin-top: clamp(4.5rem, 10vw, 8rem) !important;
+	padding-top: clamp(2rem, 4vw, 3rem);
+	border-top: 1px solid var(--pw-hairline);
+	gap: 2rem !important;
+}
+
+.pw-footer__cols p:not(.is-style-text-annotation) {
+	font-size: 0.95rem;
+	line-height: 1.75;
+	color: color-mix(in srgb, var(--pw-paper) 82%, transparent) !important;
+	margin: 0;
+}
+
+.pw-clock {
+	font-variant-numeric: tabular-nums;
+	color: var(--pw-crema);
+}
+
+.pw-footer__nav .wp-block-navigation__container {
+	gap: 0.6rem !important;
+}
+
+.pw-footer__nav .wp-block-navigation-item__content {
+	font-family: var(--wp--preset--font-family--manrope);
+	font-size: 0.95rem;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.pw-footer__wordmark {
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: clamp(3.5rem, 18.6vw, 24rem) !important;
+	line-height: 0.78;
+	letter-spacing: -0.065em;
+	white-space: nowrap;
+	text-align: center;
+	color: var(--pw-paper) !important;
+	margin: clamp(3rem, 8vw, 6rem) 0 clamp(1.5rem, 3vw, 2.5rem) !important;
+	font-variation-settings: "opsz" 144;
+	user-select: none;
+}
+
+.pw-footer .pw-colophon {
+	opacity: 1;
+	color: color-mix(in srgb, var(--pw-paper) 55%, transparent);
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--pw-hairline);
+}
+
+.pw-footer .pw-colophon p,
+.pw-footer .pw-colophon a {
+	margin: 0;
+	color: color-mix(in srgb, var(--pw-paper) 60%, transparent) !important;
+	font-size: 0.66rem;
+	text-decoration: none;
+}
+
+/* ==========================================================================
+   30. v3 — Inner page heroes
+   ========================================================================== */
+
+body:not(.home) .wp-block-post-content > .wp-block-post-title:first-child {
+	font-size: clamp(3.25rem, 11vw, 11rem) !important;
+	line-height: 0.9;
+	letter-spacing: -0.06em;
+	font-variation-settings: "SOFT" 30, "WONK" 1, "opsz" 144;
+	padding-top: clamp(4rem, 12vh, 9rem);
+	padding-bottom: clamp(2rem, 5vh, 3.5rem);
+	margin-bottom: clamp(2rem, 5vw, 4rem) !important;
+	border-bottom: 1px solid var(--pw-hairline);
+	max-width: var(--wp--style--global--wide-size) !important;
+}
+
+.wp-block-post-content > p:empty {
+	display: none;
+}
+
+/* Focus styles that hold up against every surface. */
+:where(a, button, input, select, textarea, summary):focus-visible {
+	outline: 2px solid var(--pw-brown);
+	outline-offset: 3px;
+	border-radius: 2px;
+}
+
+/* ==========================================================================
+   31. v3 — Reduced motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+	.pw-loader,
+	.pw-curtain {
+		display: none !important;
+	}
+
+	.pw-expand {
+		clip-path: none;
+	}
+
+	.pw-expand img {
+		transform: none;
+	}
+
+	.pw-js .pw-hero > * {
+		opacity: 1 !important;
+		transform: none !important;
+	}
+
+	.pw-header-hidden .wp-site-blocks > header {
+		transform: none;
+	}
+
+	.pw-is-open .pw-live-dot::after {
+		animation: none;
+	}
+}
+
+/* ==========================================================================
+   32. v3 — Inner pages: shared editorial hero
+   ========================================================================== */
+
+/* The page hero borrows .pw-hero for its entrance, but not the full-height
+   sizing the home hero uses. */
+.pw-page-hero.pw-hero,
+.pw-page-hero {
+	min-height: 0 !important;
+	display: block;
+	padding-top: clamp(3.5rem, 11vh, 8rem) !important;
+	padding-bottom: clamp(2.5rem, 6vh, 4.5rem) !important;
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+	border-bottom: 1px solid var(--pw-hairline);
+}
+
+.pw-page-title {
+	font-size: clamp(3.25rem, min(10.5vw, 20vh), 11rem) !important;
+	line-height: 0.9 !important;
+	letter-spacing: -0.06em !important;
+	font-weight: 400;
+	max-width: 12ch;
+	margin: 0 !important;
+	font-variation-settings: "SOFT" 30, "WONK" 1, "opsz" 144;
+}
+
+.pw-page-intro {
+	max-width: 46ch;
+	margin: clamp(1.5rem, 4vh, 2.5rem) 0 0 auto !important;
+	font-size: clamp(1.0625rem, 1.3vw, 1.3rem);
+	line-height: 1.6;
+	color: color-mix(in srgb, var(--pw-ink) 74%, transparent);
+}
+
+.pw-page-hero .is-style-text-annotation {
+	margin-bottom: clamp(1.25rem, 3vh, 2rem) !important;
+}
+
+@media (max-width: 781px) {
+	.pw-page-intro {
+		margin-left: 0 !important;
+	}
+}
+
+body:not(.home) .wp-site-blocks > main {
+	margin-top: 0 !important;
+}
+
+/* ==========================================================================
+   33. v3 — Adoption
+   ========================================================================== */
+
+.pw-pets {
+	padding-block: clamp(2rem, 6vw, 4rem) !important;
+	margin-top: 0 !important;
+}
+
+.pw-pet {
+	gap: clamp(2rem, 6vw, 7rem) !important;
+	align-items: center !important;
+	padding-block: clamp(3rem, 7vw, 6rem);
+	border-bottom: 1px solid var(--pw-hairline);
+	margin: 0 !important;
+}
+
+.pw-pet:last-child {
+	border-bottom: 0;
+}
+
+@media (min-width: 782px) {
+	.pw-pet.is-flipped {
+		flex-direction: row-reverse;
+	}
+}
+
+.pw-pet__media {
+	flex-basis: 46% !important;
+}
+
+.pw-pet__img {
+	margin: 0 !important;
+	overflow: hidden;
+	aspect-ratio: 4 / 5;
+	border-radius: 999px 999px 14px 14px !important;
+}
+
+.pw-pet__img img {
+	width: 100%;
+	height: 100% !important;
+	object-fit: cover;
+	border-radius: 0 !important;
+}
+
+.pw-pet__index {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.7rem;
+	letter-spacing: 0.2em;
+	color: var(--pw-brown);
+	margin: 0 0 1.5rem !important;
+}
+
+.pw-pet__name {
+	font-size: clamp(3rem, 6.5vw, 6.5rem) !important;
+	line-height: 0.92;
+	letter-spacing: -0.055em;
+	margin: 0.4rem 0 2rem !important;
+	font-variation-settings: "opsz" 144;
+}
+
+.pw-fact {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.85rem 0;
+	margin: 0 !important;
+	border-top: 1px solid var(--pw-hairline);
+	font-size: 0.98rem;
+}
+
+.pw-fact span {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.66rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+	padding-top: 0.2rem;
+}
+
+.pw-fact + .pw-pet__summary {
+	border-top: 1px solid var(--pw-hairline);
+	padding-top: 1.5rem;
+}
+
+.pw-pet__summary {
+	font-size: clamp(1.05rem, 1.2vw, 1.2rem);
+	line-height: 1.65;
+	margin: 0 0 1rem !important;
+}
+
+.pw-pet__note {
+	font-size: 0.95rem;
+	color: color-mix(in srgb, var(--pw-ink) 70%, transparent);
+	padding: 1rem 1.25rem;
+	background: var(--pw-oat);
+	border-radius: 10px;
+	margin: 0 0 2rem !important;
+}
+
+.pw-pet__note strong {
+	display: block;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.64rem;
+	font-weight: 500;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--pw-brown);
+	margin-bottom: 0.35rem;
+}
+
+.pw-steps--inline .wp-block-heading.has-xx-large-font-size {
+	max-width: 14ch;
+	margin: 0 0 clamp(3rem, 7vw, 6rem);
+	color: var(--pw-paper);
+}
+
+/* ==========================================================================
+   34. v3 — Blog index
+   ========================================================================== */
+
+.pw-blog {
+	margin-top: 0 !important;
+	padding-bottom: clamp(5rem, 12vw, 9rem);
+}
+
+.pw-stories--index {
+	margin-top: clamp(3rem, 7vw, 5rem) !important;
+}
+
+.pw-stories--index .wp-block-post-template {
+	row-gap: clamp(3rem, 6vw, 5rem) !important;
+}
+
+.pw-stories--index .wp-block-post-title {
+	font-size: clamp(1.5rem, 2.2vw, 2.1rem);
+}
+
+.pw-stories .wp-block-post-excerpt {
+	margin-top: 0.75rem;
+	font-size: 0.95rem;
+	color: color-mix(in srgb, var(--pw-ink) 68%, transparent);
+}
+
+.pw-stories .wp-block-post-excerpt__more-text {
+	display: none;
+}
+
+.pw-stories .wp-block-post-title a {
+	color: var(--pw-ink);
+}
+
+.wp-block-query-pagination {
+	margin-top: clamp(3rem, 6vw, 5rem);
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--pw-hairline);
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.7rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+/* ==========================================================================
+   35. v3 — Contact
+   ========================================================================== */
+
+.pw-contact-wrap {
+	padding-block: clamp(3.5rem, 8vw, 7rem) !important;
+	margin-top: 0 !important;
+}
+
+.pw-contact {
+	gap: clamp(2.5rem, 7vw, 8rem) !important;
+}
+
+.pw-contact__info {
+	flex-basis: 38% !important;
+}
+
+.pw-contact__big {
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: clamp(1.35rem, 2vw, 1.85rem);
+	line-height: 1.3;
+	letter-spacing: -0.025em;
+	margin: 0 0 clamp(2rem, 4vw, 3rem) !important;
+}
+
+.pw-contact__big a {
+	text-decoration: none;
+	background-image: linear-gradient(currentColor, currentColor);
+	background-size: 0% 1px;
+	background-repeat: no-repeat;
+	background-position: left bottom;
+	transition: background-size 0.6s var(--pw-ease), color 0.4s var(--pw-ease);
+}
+
+.pw-contact__big a:hover {
+	background-size: 100% 1px;
+	color: var(--pw-brown);
+}
+
+.pw-contact__form {
+	background: var(--pw-oat);
+	border-radius: 18px;
+	padding: clamp(1.75rem, 4vw, 3.5rem) !important;
+}
+
+.pw-contact__form h2 {
+	margin: 0 0 2rem !important;
+	max-width: 16ch;
+}
+
+.wpcf7 form > p {
+	margin: 0 0 1.5rem;
+}
+
+.wpcf7 label {
+	margin-bottom: 0;
+}
+
+.wpcf7 input[type="text"],
+.wpcf7 input[type="email"],
+.wpcf7 input[type="tel"],
+.wpcf7 textarea {
+	margin-top: 0.35rem;
+	font-size: 1.05rem;
+	border-bottom-color: color-mix(in srgb, var(--pw-ink) 22%, transparent);
+}
+
+.wpcf7 textarea {
+	min-height: 140px;
+	resize: vertical;
+}
+
+.wpcf7 form .wpcf7-response-output {
+	margin: 1.5rem 0 0;
+	padding: 0.9rem 1.1rem;
+	border-radius: 10px;
+	font-size: 0.9rem;
+}
+
+.pw-map {
+	padding-bottom: clamp(4rem, 9vw, 7rem) !important;
+	margin-top: 0 !important;
+}
+
+.pw-map #wpgmza_map,
+.pw-map .wpgmza_map {
+	border-radius: 18px !important;
+	min-height: 420px;
+	filter: grayscale(0.55) sepia(0.12) contrast(1.02);
+	transition: filter 0.8s var(--pw-ease);
+}
+
+.pw-map:hover #wpgmza_map,
+.pw-map:hover .wpgmza_map {
+	filter: none;
+}
+
+/* ==========================================================================
+   36. v3 — Jobs, gallery, hours, single posts
+   ========================================================================== */
+
+.pw-jobs-wrap,
+.pw-hours-wrap {
+	padding-block: clamp(3.5rem, 8vw, 7rem) !important;
+	margin-top: 0 !important;
+}
+
+.pw-jobs__list,
+.pw-hours__table {
+	flex-basis: 66% !important;
+}
+
+.pw-jobs__list ul.job_listings {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.pw-jobs__list .job_filters {
+	background: var(--pw-oat);
+	border-radius: 14px;
+	margin-bottom: 2rem;
+	overflow: hidden;
+}
+
+.pw-jobs__list .job_filters .search_jobs {
+	background: transparent;
+	padding: 1.25rem;
+	border: 0;
+}
+
+.pw-jobs__list .job_filters input,
+.pw-jobs__list .job_filters select {
+	border: 0;
+	border-bottom: 1px solid var(--pw-hairline);
+	background: transparent;
+	padding: 0.7rem 0;
+	font: inherit;
+}
+
+.pw-jobs__list ul.job_listings li.job_listing a img.company_logo {
+	display: none;
+}
+
+.pw-jobs__list .no_job_listings_found {
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+	letter-spacing: -0.03em;
+	padding: 2rem 0;
+}
+
+.pw-gallery {
+	padding-block: clamp(3rem, 7vw, 6rem) clamp(5rem, 10vw, 8rem) !important;
+	margin-top: 0 !important;
+}
+
+.pw-gallery .fg-item-inner,
+.pw-gallery .fg-thumb {
+	border-radius: 10px !important;
+	overflow: hidden;
+}
+
+.pw-gallery .fg-image {
+	transition: transform 1.1s var(--pw-ease) !important;
+}
+
+.pw-gallery .fg-item:hover .fg-image {
+	transform: scale(1.05);
+}
+
+.pw-hours__status {
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: clamp(1.75rem, 3vw, 2.75rem);
+	line-height: 1.1;
+	letter-spacing: -0.035em;
+	max-width: 10ch;
+}
+
+.pw-is-open .pw-hours__status {
+	color: #4F7A4B;
+}
+
+.pw-hours table td,
+.pw-hours table th {
+	padding-block: 1.15rem;
+}
+
+.pw-hours-visit-wrap {
+	padding-block: clamp(4rem, 10vw, 8rem) !important;
+	margin-top: 0 !important;
+}
+
+.pw-hours-visit {
+	gap: clamp(2rem, 6vw, 6rem) !important;
+	align-items: center !important;
+}
+
+.pw-hours__img {
+	margin: 0 !important;
+	border-radius: 14px !important;
+	overflow: hidden;
+	aspect-ratio: 5 / 4;
+}
+
+.pw-hours__img img {
+	width: 100%;
+	height: 100% !important;
+	object-fit: cover;
+	border-radius: 0 !important;
+}
+
+.pw-hours__visit h2 {
+	margin: 0 0 2rem !important;
+	max-width: 12ch;
+}
+
+.single-post .wp-block-post-title {
+	font-size: clamp(2.75rem, 7vw, 6.5rem) !important;
+	line-height: 0.95;
+	letter-spacing: -0.05em;
+	max-width: 16ch;
+	font-variation-settings: "opsz" 144;
+}
+
+.single-post .wp-block-post-featured-image {
+	border-radius: 16px;
+	overflow: hidden;
+}
+
+.single-post .wp-block-post-content > p {
+	font-size: clamp(1.0625rem, 1.2vw, 1.2rem);
+	line-height: 1.75;
+}
+
+/* Page heroes that sit directly in the post content have no padded parent. */
+.wp-block-post-content > .pw-page-hero {
+	box-sizing: border-box;
+	padding-inline: var(--wp--preset--spacing--50) !important;
+	max-width: calc(var(--wp--style--global--wide-size) + 2 * var(--wp--preset--spacing--50)) !important;
+	border-bottom: 0;
+}
+
+.pw-page-hero .is-style-text-annotation {
+	margin-left: 0 !important;
+	margin-right: auto !important;
+}
+
+.pw-pet > .pw-pet__media {
+	flex: 0 0 42% !important;
+}
+
+.pw-pet > .pw-pet__body {
+	flex: 1 1 0 !important;
+	min-width: 0;
+	max-width: 560px;
+}
+
+.pw-fact span {
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.pw-fact {
+	text-align: right;
+}
+
+@media (max-width: 781px) {
+	.pw-pet > .pw-pet__media,
+	.pw-pet > .pw-pet__body {
+		flex-basis: 100% !important;
+		max-width: none;
+	}
+}
+
+/* Columns without an explicit width share space equally in core, so the
+   intended proportions are pinned here. */
+.pw-contact > .pw-contact__info { flex: 0 0 34% !important; }
+.pw-contact > .pw-contact__form { flex: 1 1 0 !important; min-width: 0; }
+.pw-jobs > .wp-block-column:first-child,
+.pw-hours-grid > .wp-block-column:first-child { flex: 0 0 28% !important; }
+.pw-jobs > .pw-jobs__list,
+.pw-hours-grid > .pw-hours__table { flex: 1 1 0 !important; min-width: 0; }
+
+@media (max-width: 781px) {
+	.pw-contact > .wp-block-column,
+	.pw-jobs > .wp-block-column,
+	.pw-hours-grid > .wp-block-column { flex-basis: 100% !important; }
+}
+
+.pw-hours tbody tr.is-today {
+	background: var(--pw-oat);
+}
+
+.pw-hours tbody tr.is-today td:first-child::after {
+	content: "Today";
+	margin-left: 0.75rem;
+	padding: 0.2rem 0.55rem;
+	border-radius: 999px;
+	background: var(--pw-ink);
+	color: var(--pw-paper);
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.58rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	vertical-align: middle;
+}
+
+.pw-hours tbody td:first-child {
+	padding-left: 0.75rem;
+}
+
+.pw-hours thead th:first-child {
+	padding-left: 0.75rem;
+}
+
+/* WP Job Manager — listings as an editorial index, filters as a quiet bar. */
+.pw-jobs__list div.job_listings ul.job_listings {
+	border-top: 1px solid var(--pw-ink);
+}
+
+.pw-jobs__list ul.job_listings li.job_listing {
+	border: 0;
+	padding: 0;
+	background: none;
+}
+
+.pw-jobs__list ul.job_listings li.job_listing a {
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) auto 1.75rem;
+	align-items: center;
+	gap: 0.5rem 2rem;
+	padding: clamp(1.4rem, 2.6vw, 2.1rem) 0 !important;
+	position: relative;
+	color: var(--pw-ink);
+}
+
+.pw-jobs__list ul.job_listings li.job_listing a::after {
+	content: "→";
+	grid-column: 3;
+	grid-row: 1 / span 2;
+	justify-self: end;
+	font-size: 1.25rem;
+	transform: translateX(-6px);
+	opacity: 0.35;
+	transition: transform 0.5s var(--pw-ease), opacity 0.5s var(--pw-ease);
+}
+
+.pw-jobs__list ul.job_listings li.job_listing a:hover::after {
+	transform: none;
+	opacity: 1;
+}
+
+.pw-jobs__list ul.job_listings li.job_listing .position {
+	grid-column: 1;
+	grid-row: 1 / span 2;
+	padding: 0;
+	width: auto;
+	float: none;
+}
+
+.pw-jobs__list ul.job_listings li.job_listing .position h3 {
+	font-family: var(--wp--preset--font-family--fraunces);
+	font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+	font-weight: 400;
+	letter-spacing: -0.035em;
+	line-height: 1.1;
+	margin: 0 0 0.35rem;
+}
+
+.pw-jobs__list ul.job_listings li.job_listing .company,
+.pw-jobs__list ul.job_listings li.job_listing .company strong {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.64rem;
+	font-weight: 400;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+}
+
+.pw-jobs__list ul.job_listings li.job_listing .location,
+.pw-jobs__list ul.job_listings li.job_listing ul.meta {
+	grid-column: 2;
+	float: none;
+	width: auto;
+	padding: 0;
+	margin: 0;
+	text-align: right;
+	list-style: none;
+	white-space: nowrap;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.64rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+}
+
+.pw-jobs__list ul.job_listings li.job_listing ul.meta li {
+	display: inline;
+	margin: 0;
+	padding: 0;
+	font-size: inherit;
+	color: inherit;
+}
+
+.pw-jobs__list ul.job_listings li.job_listing.job_position_featured a {
+	background: none;
+}
+
+.pw-jobs__list .job_filters .search_jobs {
+	display: grid;
+	grid-template-columns: 1fr 1fr auto;
+	align-items: end;
+	gap: 1rem 1.5rem;
+	padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.pw-jobs__list .job_filters .search_jobs > div {
+	float: none !important;
+	width: auto !important;
+	padding: 0 !important;
+}
+
+.pw-jobs__list .job_filters .search_jobs > div[style] {
+	display: none;
+}
+
+.pw-jobs__list .job_filters .search_remote_position {
+	grid-column: 1 / -1;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.85rem;
+}
+
+.pw-jobs__list .job_filters .search_submit {
+	grid-column: 3;
+	grid-row: 1;
+}
+
+.pw-jobs__list .job_filters label {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.62rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--pw-ash);
+}
+
+.pw-jobs__list .job_filters .search_remote_position label {
+	font-family: inherit;
+	font-size: 0.85rem;
+	letter-spacing: 0;
+	text-transform: none;
+	color: var(--pw-ink);
+}
+
+.pw-jobs__list .job_filters input[type="text"] {
+	width: 100%;
+	border-bottom-color: color-mix(in srgb, var(--pw-ink) 22%, transparent);
+}
+
+.pw-jobs__list .job_filters input[type="submit"] {
+	border: 0;
+	border-radius: 999px;
+	background: var(--pw-ink);
+	color: var(--pw-paper);
+	padding: 0.95em 1.8em;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.68rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background-color 0.4s var(--pw-ease);
+}
+
+.pw-jobs__list .job_filters input[type="submit"]:hover {
+	background: var(--pw-brown);
+}
+
+.pw-jobs__list .job_filters ul.job_types {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1.25rem;
+	margin: 0;
+	padding: 1rem 1.5rem;
+	list-style: none;
+	background: transparent;
+	border-top: 1px solid var(--pw-hairline);
+	border-bottom: 0;
+}
+
+.pw-jobs__list .job_filters ul.job_types li {
+	float: none;
+	width: auto;
+	padding: 0;
+	margin: 0;
+}
+
+.pw-jobs__list .job_filters ul.job_types label {
+	font-family: inherit;
+	font-size: 0.85rem;
+	letter-spacing: 0;
+	text-transform: none;
+	color: var(--pw-ink);
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.pw-jobs__list .job_filters input[type="checkbox"] {
+	accent-color: var(--pw-brown);
+	width: auto;
+	border: 0;
+	padding: 0;
+}
+
+.pw-jobs__list .job_filters .showing_jobs {
+	background: transparent;
+	border-top: 1px solid var(--pw-hairline);
+	padding: 0.75rem 1.5rem;
+	font-size: 0.75rem;
+}
+
+.pw-jobs__list .job_filters .showing_jobs a.rss_link {
+	display: none;
+}
+
+@media (max-width: 781px) {
+	.pw-jobs__list .job_filters .search_jobs {
+		grid-template-columns: 1fr;
+	}
+
+	.pw-jobs__list .job_filters .search_submit {
+		grid-column: 1;
+		grid-row: auto;
+	}
+
+	.pw-jobs__list ul.job_listings li.job_listing a {
+		grid-template-columns: minmax(0, 1fr) 1.5rem;
+	}
+
+	.pw-jobs__list ul.job_listings li.job_listing .location,
+	.pw-jobs__list ul.job_listings li.job_listing ul.meta {
+		grid-column: 1;
+		text-align: left;
+	}
+
+	.pw-jobs__list ul.job_listings li.job_listing .position {
+		grid-row: auto;
+	}
+
+	.pw-jobs__list ul.job_listings li.job_listing a::after {
+		grid-column: 2;
+		grid-row: 1;
+	}
+}
+
+/* Flex rather than grid: the plugin injects hidden inputs that occupy cells. */
+.pw-jobs__list .job_filters .search_jobs {
+	display: flex !important;
+	flex-wrap: wrap;
+	align-items: flex-end;
+}
+
+.pw-jobs__list .job_filters .search_keywords,
+.pw-jobs__list .job_filters .search_location {
+	flex: 1 1 180px;
+}
+
+.pw-jobs__list .job_filters .search_submit {
+	flex: 0 0 auto;
+	order: 3;
+}
+
+.pw-jobs__list .job_filters .search_remote_position {
+	flex: 1 1 100%;
+	order: 4;
+}
+
+/* FooGallery — fixed-width tiles become an editorial grid. */
+.pw-gallery .foogallery.fg-default {
+	display: grid !important;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-auto-flow: dense;
+	gap: clamp(0.75rem, 1.6vw, 1.5rem);
+	width: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+}
+
+.pw-gallery .foogallery .fg-item {
+	width: auto !important;
+	height: auto !important;
+	margin: 0 !important;
+	border: 0 !important;
+	box-shadow: none !important;
+	aspect-ratio: 1;
+}
+
+.pw-gallery .foogallery .fg-item:nth-child(6n + 1) {
+	grid-column: span 2;
+	grid-row: span 2;
+}
+
+.pw-gallery .foogallery .fg-item-inner,
+.pw-gallery .foogallery .fg-thumb,
+.pw-gallery .foogallery .fg-image-wrap,
+.pw-gallery .foogallery .fg-image {
+	width: 100% !important;
+	height: 100% !important;
+	max-width: none !important;
+	border: 0 !important;
+	box-shadow: none !important;
+	background: var(--pw-oat);
+}
+
+.pw-gallery .foogallery .fg-image {
+	object-fit: cover;
+}
+
+.pw-gallery .foogallery .fg-item-inner {
+	border-radius: 12px !important;
+}
+
+@media (max-width: 781px) {
+	.pw-gallery .foogallery.fg-default {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+/* ==========================================================================
+   37. v3.1 — Navbar redesign
+   ========================================================================== */
+
+/* The logo already links home, so the duplicate "Pawffee Break" item is
+   dropped from the inline bar (it stays in the mobile overlay and footer). */
+.wp-site-blocks > header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation-item:first-child {
+	display: none;
+}
+
+/* Inline bar: a soft pill holding sentence-case links. */
+.wp-site-blocks > header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container {
+	gap: 0.15rem !important;
+	padding: 0.3rem;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--pw-oat) 85%, transparent);
+	border: 1px solid var(--pw-hairline-soft);
+}
+
+.wp-site-blocks > header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation-item__content {
+	display: block;
+	padding: 0.6rem 1.05rem !important;
+	border-radius: 999px;
+	font-family: var(--wp--preset--font-family--manrope);
+	font-size: 0.875rem;
+	font-weight: 500;
+	letter-spacing: -0.005em;
+	text-transform: none;
+	line-height: 1;
+	color: color-mix(in srgb, var(--pw-ink) 78%, transparent);
+	transition: background-color 0.35s var(--pw-ease), color 0.35s var(--pw-ease);
+}
+
+.wp-site-blocks > header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation-item__content::after {
+	display: none;
+}
+
+.wp-site-blocks > header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation-item__content:hover {
+	background: var(--pw-paper);
+	color: var(--pw-ink);
+}
+
+.wp-site-blocks > header .wp-block-navigation__responsive-container:not(.is-menu-open) .current-menu-item > .wp-block-navigation-item__content {
+	background: var(--pw-ink);
+	color: var(--pw-paper);
+}
+
+/* Breathing room between logo, status, pill and CTA. */
+.wp-site-blocks > header .wp-block-group.alignwide {
+	gap: clamp(1rem, 2.5vw, 2.5rem) !important;
+}
+
+.pw-header__right {
+	gap: 0.75rem !important;
+}
+
+.pw-header__cta .wp-block-button__link {
+	padding: 0.95em 1.6em !important;
+	font-size: 0.68rem !important;
+	letter-spacing: 0.14em;
+}
+
+/* The status line only shows when there is genuinely room for it. */
+@media (max-width: 1439px) {
+	.wp-site-blocks > header .header-tagline {
+		display: none !important;
+	}
+}
+
+/* Collapse to the overlay a little earlier so the pill never squeezes. */
+@media (max-width: 1180px) {
+	.wp-site-blocks > header .wp-block-navigation__responsive-container-open:not(.always-shown) {
+		display: flex;
+	}
+
+	.wp-site-blocks > header .wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
+		display: none;
+	}
+}
+
+/* Hamburger as a matching round button. */
+.wp-site-blocks > header .wp-block-navigation__responsive-container-open {
+	width: 2.75rem;
+	height: 2.75rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: var(--pw-oat);
+	border: 1px solid var(--pw-hairline-soft);
+}
+
+/* Overlay menu: numbered, roomy list. */
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
+	counter-reset: pw-nav;
+	gap: 0 !important;
+	width: 100%;
+	max-width: var(--wp--style--global--wide-size);
+	margin-inline: auto;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item {
+	width: 100%;
+	border-bottom: 1px solid var(--pw-hairline);
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
+	display: flex !important;
+	align-items: baseline;
+	gap: 1rem;
+	width: 100%;
+	padding: 0.85rem 0 !important;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content::before {
+	counter-increment: pw-nav;
+	content: "0" counter(pw-nav);
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.7rem;
+	letter-spacing: 0.16em;
+	color: var(--pw-brown);
+}
+
+/* ==========================================================================
+   38. v3.1 — Stats row, centred
+   ========================================================================== */
+
+.pw-stats .wp-block-column {
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+}
+
+.pw-stats .wp-block-column:first-child {
+	padding-left: clamp(1rem, 2vw, 2rem);
+}
+
+.pw-stat__num {
+	text-align: center;
+	width: 100%;
+}
+
+.pw-stat__label {
+	text-align: center;
+	margin-inline: auto !important;
+}
+
+@media (max-width: 781px) {
+	.pw-stats .wp-block-column,
+	.pw-stats .wp-block-column:nth-child(odd) {
+		padding-inline: 0.75rem;
+	}
+}
+
+.pw-stats .pw-stat__label {
+	max-width: 24ch;
+}
+
+/* ==========================================================================
+   39. v3.2 — Live open / closed status chip
+   ========================================================================== */
+
+/* Reset the old mono "set-in label" treatment the tagline paragraph had. */
+.wp-site-blocks > header .header-tagline {
+	font-family: var(--wp--preset--font-family--manrope) !important;
+	font-size: 0.8125rem !important;
+	letter-spacing: 0 !important;
+	text-transform: none !important;
+	color: var(--pw-ink) !important;
+	margin: 0 auto 0 0 !important;
+}
+
+.pw-status-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.55rem 1rem 0.55rem 0.85rem;
+	border: 1px solid var(--pw-hairline);
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--pw-paper) 70%, transparent);
+	color: var(--pw-ink) !important;
+	text-decoration: none !important;
+	line-height: 1;
+	white-space: nowrap;
+	transition: background-color 0.35s var(--pw-ease), border-color 0.35s var(--pw-ease);
+}
+
+.pw-status-chip:hover {
+	background: var(--pw-oat);
+	border-color: color-mix(in srgb, var(--pw-ink) 22%, transparent);
+}
+
+.pw-open-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.pw-open-status__state {
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+.pw-open-status__sep {
+	width: 3px;
+	height: 3px;
+	border-radius: 50%;
+	background: currentColor;
+	opacity: 0.35;
+}
+
+.pw-open-status__detail {
+	color: var(--pw-ash);
+}
+
+/* Dot colours per state. */
+.pw-live-dot {
+	width: 8px;
+	height: 8px;
+	background: var(--pw-clay);
+}
+
+.pw-is-open .pw-live-dot {
+	background: #4F8A4B;
+}
+
+.pw-is-open .pw-live-dot::after {
+	border-color: #4F8A4B;
+}
+
+.pw-is-open .pw-open-status__state {
+	color: #3E7039;
+}
+
+.pw-closing-soon .pw-live-dot {
+	background: #C98A2E;
+}
+
+.pw-closing-soon .pw-live-dot::after {
+	border-color: #C98A2E;
+}
+
+.pw-closing-soon .pw-open-status__state {
+	color: #9A6417;
+}
+
+html:not(.pw-is-open) .pw-open-status__state {
+	color: var(--pw-clay);
+}
+
+/* Shown whenever there is room beside the inline nav. */
+@media (min-width: 1240px) {
+	.wp-site-blocks > header .header-tagline {
+		display: inline-flex !important;
+	}
+}
+
+@media (max-width: 1239px) {
+	.wp-site-blocks > header .header-tagline {
+		display: none !important;
+	}
+}
+
+/* Hours page: the same status, set large. */
+.pw-hours__status .pw-open-status {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.6rem;
+}
+
+.pw-hours__status .pw-open-status__state {
+	font-weight: 400;
+	letter-spacing: -0.04em;
+}
+
+.pw-hours__status .pw-open-status__sep {
+	display: none;
+}
+
+.pw-hours__status .pw-open-status__detail {
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.72rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+.pw-is-open .pw-hours__status {
+	color: inherit;
+}
+
+/* ==========================================================================
+   40. v3.2 — Header controls on one line, one height
+   ========================================================================== */
+
+:root {
+	--pw-ctl-h: 46px;
+}
+
+.wp-site-blocks > header .wp-block-group.alignwide,
+.pw-header__right {
+	align-items: center !important;
+}
+
+/* Separate, but on the same centre line. */
+.pw-header__right {
+	gap: 1rem !important;
+}
+
+.pw-header__right > *,
+.pw-header__right .wp-block-navigation,
+.pw-header__cta,
+.pw-header__cta .wp-block-button {
+	margin: 0 !important;
+	align-self: center;
+}
+
+.pw-header__cta {
+	display: flex;
+	align-items: center;
+}
+
+/* Nav pill: fixed height, items centred inside it. */
+.wp-site-blocks > header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container {
+	box-sizing: border-box;
+	height: var(--pw-ctl-h);
+	align-items: center;
+	padding: 0 4px;
+}
+
+.wp-site-blocks > header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation-item__content {
+	height: calc(var(--pw-ctl-h) - 10px);
+	display: flex !important;
+	align-items: center;
+	padding: 0 1.05rem !important;
+}
+
+/* Adopt: same height as the pill. */
+.pw-header__cta .wp-block-button__link {
+	box-sizing: border-box;
+	height: var(--pw-ctl-h);
+	display: inline-flex !important;
+	align-items: center;
+	justify-content: center;
+	padding: 0 1.6rem !important;
+	line-height: 1 !important;
+}
+
+/* Status chip and hamburger share the same height. */
+.pw-status-chip {
+	box-sizing: border-box;
+	height: var(--pw-ctl-h);
+	padding: 0 1.1rem 0 0.95rem;
+}
+
+.wp-site-blocks > header .wp-block-navigation__responsive-container-open {
+	width: var(--pw-ctl-h);
+	height: var(--pw-ctl-h);
+}
+
+.wp-site-blocks > header .header-tagline {
+	align-self: center;
+	line-height: 1;
+}
+
+/* ==========================================================================
+   41. v3.1 — Performance
+   ========================================================================== */
+
+/* The grain was a 200%-viewport layer with mix-blend-mode, animated forever.
+   Blending forces a full-screen repaint on every frame and every scroll —
+   the main cause of the heavy feel. It is now a static, viewport-sized,
+   non-blended overlay the compositor can keep as a single cached layer. */
+.pawffee-grain {
+	inset: 0;
+	opacity: 0.09;
+	mix-blend-mode: normal;
+	animation: none;
+	will-change: auto;
+	background-size: 220px 220px;
+}
+
+/* Quicker, tighter scroll reveals. */
+:root {
+	--pw-dur: 0.7s;
+}
+
+.pw-js .wp-block-image.pw-wipe img {
+	transition:
+		clip-path 0.95s var(--pw-ease-out),
+		transform 1.2s var(--pw-ease-out);
+}
+
+/* Skip layout and paint for off-screen sections until they come near. */
+.pw-residents,
+.pw-steps,
+.pw-journal,
+.pw-visit,
+.pw-hours-visit-wrap {
+	content-visibility: auto;
+	contain-intrinsic-size: auto 900px;
+}
+
+/* ==========================================================================
+   42. v3.1 — YouTube click-to-play preview
+   ========================================================================== */
+
+.pw-yt .wp-block-embed__wrapper {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	border-radius: 10px;
+	overflow: hidden;
+	background: #000;
+}
+
+.pw-yt iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+.pw-yt__btn {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	border: 0;
+	background: #000;
+	cursor: pointer;
+	display: block;
+}
+
+.pw-yt__thumb {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: 0.82;
+	transition: transform 1s var(--pw-ease), opacity 0.5s var(--pw-ease);
+}
+
+.pw-yt__btn:hover .pw-yt__thumb {
+	transform: scale(1.04);
+	opacity: 0.95;
+}
+
+.pw-yt__play {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 78px;
+	height: 78px;
+	margin: -39px 0 0 -39px;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	background: var(--pw-paper);
+	box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.5);
+	transition: transform 0.5s var(--pw-ease), background-color 0.4s var(--pw-ease);
+}
+
+.pw-yt__play svg {
+	width: 26px;
+	height: 26px;
+	margin-left: 3px;
+	fill: var(--pw-ink);
+}
+
+.pw-yt__btn:hover .pw-yt__play {
+	transform: scale(1.1);
+	background: var(--pw-crema);
+}
+
+.pw-yt__title {
+	position: absolute;
+	left: 1.25rem;
+	right: 1.25rem;
+	bottom: 1.1rem;
+	text-align: left;
+	font-family: var(--wp--preset--font-family--manrope);
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: #fff;
+	text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pw-loader__brand span,
+	.pw-loader__paw,
+	.pw-loader__line {
+		animation: none;
+		transform: none;
+		opacity: 1;
+	}
+}
+
+/* Visit band: the storefront photo sits where the video used to. */
+.pw-visit__img {
+	margin: 0 !important;
+	overflow: hidden;
+	border-radius: 12px !important;
+	aspect-ratio: 4 / 3;
+}
+
+.pw-visit__img img {
+	width: 100%;
+	height: 100% !important;
+	object-fit: cover;
+	border-radius: 0 !important;
+}
+
+/* Logged-in visitors (and the Playground demo) see the admin bar; the sticky
+   header and its hide-on-scroll state sit below it rather than under it. */
+.admin-bar .wp-site-blocks > header {
+	top: var(--wp-admin--admin-bar--height, 32px);
+}
+
+.admin-bar.pw-header-hidden .wp-site-blocks > header,
+.pw-header-hidden .admin-bar .wp-site-blocks > header {
+	transform: translateY(calc(-100% - var(--wp-admin--admin-bar--height, 32px)));
+}
+
+@media (max-width: 600px) {
+	/* Core un-sticks the admin bar on small screens. */
+	.admin-bar .wp-site-blocks > header {
+		top: 0;
+	}
+}
+
+/* OpenStreetMap embed used by the demo for the café location. */
+.pw-osm {
+	display: block;
+	width: 100%;
+	height: 420px;
+	border: 0;
+	border-radius: 18px;
+	filter: grayscale(0.55) sepia(0.12) contrast(1.02);
+	transition: filter 0.8s var(--pw-ease);
+}
+
+.pw-map:hover .pw-osm {
+	filter: none;
+}
+
+.pw-osm__link {
+	margin-top: 0.85rem;
+	font-family: var(--wp--preset--font-family--fira-code);
+	font-size: 0.66rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+.pw-osm__link a {
+	color: var(--pw-ash);
+	text-decoration: none;
+}
+
+.pw-osm__link a:hover {
+	color: var(--pw-brown);
+}
