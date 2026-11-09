@@ -213,6 +213,12 @@ function pawffee_seed_demo() {
 			update_post_meta( $id, '_pawffee_job_type', $job['type'] );
 		}
 
+		// WP Job Manager saves "listings per page" in its setup wizard; on a
+		// fresh install it is blank, and the [jobs] list then shows only one.
+		if ( ! (int) get_option( 'job_manager_per_page' ) ) {
+			update_option( 'job_manager_per_page', 10 );
+		}
+
 		update_option( 'pawffee_demo_job_types_pending', 1 );
 		pawffee_assign_demo_job_types();
 
