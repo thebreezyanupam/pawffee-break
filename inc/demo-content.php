@@ -260,6 +260,12 @@ function pawffee_assign_demo_job_types() {
 	}
 
 	delete_option( 'pawffee_demo_job_types_pending' );
+
+	// WP Job Manager caches listing queries, and setting terms doesn't clear
+	// that cache, so a result fetched before the types existed would stick.
+	if ( class_exists( 'WP_Job_Manager_Cache_Helper' ) ) {
+		WP_Job_Manager_Cache_Helper::get_transient_version( 'get_job_listings', true );
+	}
 }
 add_action( 'init', 'pawffee_assign_demo_job_types', 99 );
 
